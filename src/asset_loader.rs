@@ -5,6 +5,7 @@ pub struct AssetLoaderPlugin;
 #[derive(Resource, Debug)]
 pub struct TextureAssets {
     // Textures go here
+    raw_kernel: Handle<Image>,
 }
 
 #[derive(Resource, Debug)]
@@ -24,8 +25,12 @@ impl Plugin for AssetLoaderPlugin {
 }
 
 fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let png = |sprite_name: &str| -> Handle<Image> {
+        asset_server.load(format!("sprites/{sprite_name}.png"))
+    };
+
     commands.insert_resource(TextureAssets {
-        // Textures go here
+        raw_kernel: png("raw-kernel"),
     });
 
     commands.insert_resource(TextureAtlasAssets {
