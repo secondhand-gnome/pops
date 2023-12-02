@@ -1,0 +1,17 @@
+<!-- see https://bevy-cheatbook.github.io/platforms/wasm/webpage.html -->
+<!doctype html>
+<html lang="en">
+
+<body style="margin: 0px;">
+    <script type="module">
+        import init from './pops.js'
+
+        init().catch((error) => {
+            if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
+                throw error;
+            }
+        });
+    </script>
+</body>
+
+</html>
