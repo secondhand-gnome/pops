@@ -22,6 +22,7 @@ fn main() {
         AudioPlugin,
         asset_loader::AssetLoaderPlugin,
         camera::CameraPlugin,
+        input::InputPlugin,
         main_game::MainGamePlugin,
         // TODO add ui
     ));
