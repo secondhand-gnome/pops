@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy::sprite::MaterialMesh2dBundle;
 
+use crate::config::hex;
+
 pub struct MainGamePlugin;
 
 impl Plugin for MainGamePlugin {
@@ -13,7 +15,7 @@ impl Plugin for MainGamePlugin {
 }
 
 fn render_background(mut commands: Commands) {
-    commands.insert_resource(ClearColor(Color::RED));
+    commands.insert_resource(ClearColor(hex("#090a14")));
 }
 
 fn render_a_boring_square(
