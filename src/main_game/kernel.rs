@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::asset_loader::TextureAssets;
+
 pub struct KernelPlugin;
 
 impl Plugin for KernelPlugin {
@@ -22,12 +24,13 @@ struct Kernel {
     state: KernelState,
 }
 
-#[derive(Bundle, Debug, Default)]
-struct KernelBundle {
-    kernel: Kernel,
-    // TODO sprite and transform
-}
-
-fn spawn_first_kernel(mut commands: Commands) {
-    commands.spawn((KernelBundle { ..default() }, Name::new("Kernel")));
+fn spawn_first_kernel(mut commands: Commands, texture_assets: Res<TextureAssets>) {
+    commands.spawn((
+        Kernel { ..default() },
+        SpriteBundle {
+            texture: texture_assets.raw_kernel.clone(),
+            ..default()
+        },
+        Name::new("Kernel"),
+    ));
 }

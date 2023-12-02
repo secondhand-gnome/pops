@@ -4,8 +4,8 @@ pub struct AssetLoaderPlugin;
 
 #[derive(Resource, Debug)]
 pub struct TextureAssets {
-    raw_kernel: Handle<Image>,
-    popped_kernel_1: Handle<Image>,
+    pub raw_kernel: Handle<Image>,
+    pub popped_kernel_1: Handle<Image>,
 }
 
 #[derive(Resource, Debug)]
