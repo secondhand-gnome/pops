@@ -2,7 +2,7 @@ mod kernel;
 
 use bevy::prelude::*;
 
-use crate::config::hex;
+use crate::config::{hex, BACKGROUND_COLOR};
 
 use self::kernel::KernelPlugin;
 
@@ -16,7 +16,7 @@ impl Plugin for MainGamePlugin {
 }
 
 fn render_background(mut commands: Commands) {
-    commands.insert_resource(ClearColor(hex("#090a14")));
+    commands.insert_resource(ClearColor(hex(BACKGROUND_COLOR)));
 }
 
 fn spawn_camera(mut commands: Commands) {
