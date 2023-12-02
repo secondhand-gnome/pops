@@ -3139,6 +3139,7 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_kira_audio",
  "bevy_rapier2d",
+ "log",
 ]
 
 [[package]]
