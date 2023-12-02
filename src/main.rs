@@ -1,5 +1,5 @@
 mod asset_loader;
-mod common;
+mod camera;
 mod config;
 mod input;
 mod main_game;
@@ -8,7 +8,7 @@ use bevy::{prelude::*, window::WindowResolution};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
-use common::MainCamera;
+use camera::MainCamera;
 
 use crate::config::*;
 
@@ -21,10 +21,10 @@ fn main() {
         RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(RAPIER_PIXELS_PER_METER),
         AudioPlugin,
         asset_loader::AssetLoaderPlugin,
+        camera::CameraPlugin,
         main_game::MainGamePlugin,
         // TODO add ui
-    ))
-    .add_systems(Startup, (spawn_camera, render_background));
+    ));
 
     if config::is_debug() {
         app.add_plugins((
@@ -45,12 +45,4 @@ fn get_window_plugin() -> WindowPlugin {
         }),
         ..default()
     }
-}
-
-fn spawn_camera(mut commands: Commands) {
-    commands.spawn((Camera2dBundle::default(), MainCamera));
-}
-
-fn render_background(mut commands: Commands) {
-    commands.insert_resource(ClearColor(hex(BACKGROUND_COLOR)));
 }
