@@ -2,6 +2,11 @@
 
 Created for [Bevy Game Jam #4](https://itch.io/jam/bevy-jam-4).
 
+# Third-Party Assets
+
+## Noto Sans Font
+* [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans/about) font licensed under the [Open Font License](https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL).
+
 # License
 (c) 2023 Secondhand Gnome
 
