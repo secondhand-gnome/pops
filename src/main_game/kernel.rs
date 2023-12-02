@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
-use crate::asset_loader::TextureAssets;
+use crate::asset_loader::TextureAtlasAssets;
+
+const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
 
 pub struct KernelPlugin;
 
@@ -24,11 +26,13 @@ struct Kernel {
     state: KernelState,
 }
 
-fn spawn_first_kernel(mut commands: Commands, texture_assets: Res<TextureAssets>) {
+fn spawn_first_kernel(mut commands: Commands, texture_atlases: Res<TextureAtlasAssets>) {
     commands.spawn((
         Kernel { ..default() },
-        SpriteBundle {
-            texture: texture_assets.raw_kernel.clone(),
+        SpriteSheetBundle {
+            texture_atlas: texture_atlases.kernel.clone(),
+            sprite: TextureAtlasSprite::new(0), // TODO indexes
+            transform: Transform::from_scale(KERNEL_SPRITE_SCALE),
             ..default()
         },
         Name::new("Kernel"),
