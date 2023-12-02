@@ -8,7 +8,6 @@ use bevy::{prelude::*, window::WindowResolution};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
-use camera::MainCamera;
 
 use crate::config::*;
 
