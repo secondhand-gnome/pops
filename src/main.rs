@@ -2,7 +2,7 @@ mod asset_loader;
 mod config;
 mod main_game;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, window::WindowResolution};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -35,6 +35,7 @@ fn main() {
 fn get_window_plugin() -> WindowPlugin {
     WindowPlugin {
         primary_window: Some(Window {
+            resolution: WindowResolution::new(WINDOW_WIDTH, WINDOW_HEIGHT),
             title: GAME_TITLE.into(),
             ..default()
         }),
