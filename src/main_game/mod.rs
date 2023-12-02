@@ -1,13 +1,17 @@
+mod kernel;
+
 use bevy::prelude::*;
 use bevy::sprite::MaterialMesh2dBundle;
 
 use crate::config::hex;
 
+use self::kernel::KernelPlugin;
+
 pub struct MainGamePlugin;
 
 impl Plugin for MainGamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
+        app.add_plugins(KernelPlugin).add_systems(
             Startup,
             (spawn_camera, render_background, render_a_boring_square),
         );
