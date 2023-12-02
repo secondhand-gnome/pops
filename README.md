@@ -2,6 +2,16 @@
 
 Created for [Bevy Game Jam #4](https://itch.io/jam/bevy-jam-4).
 
+## Feature checklist
+* [ ] A kernel that pops when clicked
+* [ ] Rendering a lot of kernels at once
+* [ ] Button that creates more kernels
+* [ ] Button that creates a kettle
+* [ ] When kernels and oil are placed into the kettle, they auto-pop.
+* [ ] Customer order system - Sell popped kernels for $
+* [ ] Require $ to buy more kernels, oil, and kettles
+* [ ] Later upgrades - large and more numerous machines
+
 # Third-Party Assets
 
 ## Noto Sans Font
