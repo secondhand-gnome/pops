@@ -10,7 +10,9 @@ bevy = "0.12.1"
 bevy-inspector-egui = "0.21.0"
 bevy_kira_audio = "0.18.0"
 bevy_rapier2d = "0.23.0"
+bigdecimal = "0.4.2"
 log = "0.4.20"
+num-format = { version = "0.4.3", features = ["with-num-bigint"] }
 rand = "0.8.5"
 
 # optimize size for web release - see https://bevy-cheatbook.github.io/platforms/wasm/size-opt.html
