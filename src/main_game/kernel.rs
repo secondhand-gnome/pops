@@ -8,6 +8,12 @@ use super::layers::{CollisionGroupMethods, Layer};
 const KERNEL_SPRITE_SIZE_PX: Vec2 = Vec2::new(16., 16.);
 const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
 
+// See article "Physical properties of popcorn kernels"
+// https://www.sciencedirect.com/science/article/abs/pii/S0260877404006016
+
+// A kernel weighs 0.15 grams
+const KERNEL_MASS: f32 = 0.15;
+
 pub struct KernelPlugin;
 
 #[derive(Event)]
@@ -57,6 +63,7 @@ fn spawn_first_kernel(mut commands: Commands, texture_atlases: Res<TextureAtlasA
             ..default()
         },
         Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
+        ColliderMassProperties::Mass(KERNEL_MASS),
         RigidBody::Dynamic,
         kernel_collision_groups(),
         SolverGroups::new(kernel_group(), kernel_group()),
@@ -88,14 +95,26 @@ fn kernel_collision_groups() -> CollisionGroups {
 }
 
 fn pop_kernels(
+    mut commands: Commands,
     mut ev_pop: EventReader<PopEvent>,
     mut q_kernels: Query<(Entity, &mut Kernel, &mut TextureAtlasSprite)>,
 ) {
     for ev in ev_pop.read() {
         for (entity, mut kernel, mut sprite) in q_kernels.iter_mut() {
             if ev.kernel == entity && kernel.state == KernelState::Raw {
+                // Change the kernel's state to Popped
                 kernel.state = KernelState::Popped;
+
+                // Change the kernel's sprite
                 sprite.index = KernelState::Popped.sprite_index();
+
+                // Apply an impulse to the kernel
+                commands.entity(entity).insert(ExternalImpulse {
+                    // TODO randomize direction, keeping constant magnitude
+                    impulse: Vec2::new(15., 15.),
+                    torque_impulse: 0.,
+                });
+
                 debug!("Pop!");
             }
         }
