@@ -6,6 +6,8 @@ use crate::{
     main_game::kernel::SpawnKernelEvent,
 };
 
+use super::money::BankAccount;
+
 pub struct UiPlugin;
 
 const BOTTOM_BAR_PADDING: Val = Val::Px(4.);
@@ -53,6 +55,7 @@ struct UiButtonBundle {
 
 fn spawn_menu(
     mut commands: Commands,
+    bank_account: Res<BankAccount>,
     font_assets: Res<FontAssets>,
     texture_assets: Res<TextureAssets>,
 ) {
@@ -90,7 +93,7 @@ fn spawn_menu(
                         Name::new("Account balance label"),
                         Label,
                         TextBundle::from_section(
-                            "$100",
+                            format!("{}", bank_account.as_ref()),
                             TextStyle {
                                 font: font_assets.default.clone(),
                                 // TODO fix style
