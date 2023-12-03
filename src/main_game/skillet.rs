@@ -1,10 +1,11 @@
 use bevy::prelude::*;
+use bevy_rapier2d::geometry::Collider;
 
 use crate::asset_loader::TextureAssets;
 
 pub struct SkilletPlugin;
 
-const SKILLET_SPRITE_SIZE_PX: Vec2 = Vec2::new(256., 64.);
+// const SKILLET_SPRITE_SIZE_PX: Vec2 = Vec2::new(256., 64.);
 const SKILLET_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
 
 impl Plugin for SkilletPlugin {
@@ -21,5 +22,18 @@ fn spawn_skillet(mut commands: Commands, texture_assets: Res<TextureAssets>) {
             ..default()
         },
         // TODO collider
+        skillet_collider(),
     ));
+}
+
+fn skillet_collider() -> Collider {
+    Collider::polyline(
+        vec![
+            Vec2::new(-100., 128.),
+            Vec2::new(-100., -4.),
+            Vec2::new(100., -4.),
+            Vec2::new(100., 128.),
+        ],
+        None,
+    )
 }
