@@ -14,6 +14,8 @@ const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
 // See article "Physical properties of popcorn kernels"
 // https://www.sciencedirect.com/science/article/abs/pii/S0260877404006016
 
+const KERNEL_SPAWN_LOCATION_X_RANGE: Range<f32> = (-80.)..(80.);
+
 // A kernel weighs 0.15 grams
 const KERNEL_MASS: f32 = 0.15;
 
@@ -71,13 +73,18 @@ fn spawn_kernels(
     texture_atlases: Res<TextureAtlasAssets>,
 ) {
     for _ in ev_spawn_kernel.read() {
+        let mut rng = rand::thread_rng();
+        let translation = Vec3 {
+            x: rng.gen_range(KERNEL_SPAWN_LOCATION_X_RANGE),
+            y: 0.,
+            z: Layer::Kernel.z(),
+        };
         commands.spawn((
             Kernel { ..default() },
             SpriteSheetBundle {
                 texture_atlas: texture_atlases.kernel.clone(),
                 sprite: TextureAtlasSprite::new(0), // TODO indexes
-                transform: Transform::from_scale(KERNEL_SPRITE_SCALE)
-                    .with_translation(Vec3::Z * Layer::Kernel.z()),
+                transform: Transform::from_scale(KERNEL_SPRITE_SCALE).with_translation(translation),
                 ..default()
             },
             Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
