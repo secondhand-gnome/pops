@@ -5,6 +5,7 @@ pub struct AssetLoaderPlugin;
 #[derive(Resource, Debug)]
 pub struct TextureAssets {
     // Textures go here
+    pub raw_kernel: Handle<Image>,
     pub skillet: Handle<Image>,
 }
 
@@ -36,6 +37,7 @@ fn load_assets(
 
     commands.insert_resource(TextureAssets {
         // Textures go here
+        raw_kernel: png("raw-kernel"),
         skillet: png("skillet"),
     });
 

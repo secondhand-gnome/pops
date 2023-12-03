@@ -1,12 +1,16 @@
 use bevy::prelude::*;
 
-use crate::{asset_loader::FontAssets, config::hex};
+use crate::{
+    asset_loader::{FontAssets, TextureAssets},
+    config::hex,
+};
 
 pub struct UiPlugin;
 
 const COLOR_BUTTON_TEXT: &str = "#10141f";
 const MENU_BUTTON_FONT_SIZE: f32 = 40.;
 
+// TODO make these greyscale since we're using image buttons
 pub const COLOR_BUTTON_BACKGROUND: &str = "#73bed3";
 pub const COLOR_BUTTON_BACKGROUND_HOVER: &str = "#4f8fba";
 pub const COLOR_BUTTON_BACKGROUND_PRESSED: &str = "#3c5e8b";
@@ -45,7 +49,11 @@ struct UiButtonBundle {
     state: ButtonState,
 }
 
-fn spawn_menu(mut commands: Commands, font_assets: Res<FontAssets>) {
+fn spawn_menu(
+    mut commands: Commands,
+    font_assets: Res<FontAssets>,
+    texture_assets: Res<TextureAssets>,
+) {
     commands
         .spawn((
             Name::new("MenuRoot"),
@@ -83,6 +91,10 @@ fn spawn_menu(mut commands: Commands, font_assets: Res<FontAssets>) {
                                     style: buy_button_style(),
                                     border_color: BorderColor(Color::BLACK),
                                     background_color: hex(COLOR_BUTTON_BACKGROUND).into(),
+                                    image: UiImage {
+                                        texture: texture_assets.raw_kernel.clone(),
+                                        ..default()
+                                    },
                                     ..default()
                                 },
                                 b_type: ButtonType::BuyKernel,
@@ -90,14 +102,15 @@ fn spawn_menu(mut commands: Commands, font_assets: Res<FontAssets>) {
                             },
                         ))
                         .with_children(|builder| {
-                            builder.spawn(TextBundle::from_section(
-                                "Buy Kernel",
-                                TextStyle {
-                                    font: font_assets.default.clone(),
-                                    font_size: MENU_BUTTON_FONT_SIZE,
-                                    color: hex(COLOR_BUTTON_TEXT),
-                                },
-                            ));
+                            // builder.spawn(TextBundle::from_section(
+                            //     // TODO remove for the x1 button. Add a x10, x100 etc. ?
+                            //     "Buy Kernel",
+                            //     TextStyle {
+                            //         font: font_assets.default.clone(),
+                            //         font_size: MENU_BUTTON_FONT_SIZE,
+                            //         color: hex(COLOR_BUTTON_TEXT),
+                            //     },
+                            // ));
                         });
                 });
         });
@@ -105,8 +118,9 @@ fn spawn_menu(mut commands: Commands, font_assets: Res<FontAssets>) {
 
 fn buy_button_style() -> Style {
     Style {
-        height: Val::Px(65.0),
-        border: UiRect::all(Val::Px(5.0)),
+        height: Val::Px(64.),
+        width: Val::Px(64.),
+        border: UiRect::all(Val::Px(2.0)),
         // horizontally center child text
         justify_content: JustifyContent::Center,
         // vertically center child text
