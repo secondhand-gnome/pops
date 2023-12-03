@@ -1,12 +1,13 @@
 use bevy::prelude::*;
+use bevy_rapier2d::na::balancing::balance_parlett_reinsch;
 
 use crate::{
     asset_loader::{FontAssets, TextureAssets},
     config::hex,
-    main_game::kernel::SpawnKernelEvent,
+    main_game::kernel::KernelSpawnEvent,
 };
 
-use super::money::BankAccount;
+use super::{kernel::KernelPurchaseEvent, money::BankAccount};
 
 pub struct UiPlugin;
 
@@ -22,7 +23,14 @@ pub const COLOR_BUTTON_BACKGROUND_PRESSED: &str = "#3c5e8b";
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_menu)
-            .add_systems(Update, (button_appearance_update, button_release_listener))
+            .add_systems(
+                Update,
+                (
+                    button_appearance_update,
+                    button_release_listener,
+                    update_account_balance,
+                ),
+            )
             .add_event::<ButtonReleaseEvent>();
     }
 }
@@ -43,7 +51,9 @@ pub struct ButtonReleaseEvent {
 pub enum ButtonType {
     #[default]
     Unknown,
-    BuyKernel,
+
+    /// Button to buy a quantity of kernels
+    BuyKernel(u64),
 }
 
 #[derive(Bundle, Default)]
@@ -52,6 +62,9 @@ struct UiButtonBundle {
     b_type: ButtonType,
     state: ButtonState,
 }
+
+#[derive(Component)]
+struct AccountBalanceLabel;
 
 fn spawn_menu(
     mut commands: Commands,
@@ -91,9 +104,10 @@ fn spawn_menu(
                 .with_children(|builder| {
                     builder.spawn((
                         Name::new("Account balance label"),
+                        AccountBalanceLabel,
                         Label,
                         TextBundle::from_section(
-                            format!("{}", bank_account.as_ref()),
+                            bank_account.to_string(),
                             TextStyle {
                                 font: font_assets.default.clone(),
                                 // TODO fix style
@@ -131,7 +145,7 @@ fn spawn_menu(
                                     },
                                     ..default()
                                 },
-                                b_type: ButtonType::BuyKernel,
+                                b_type: ButtonType::BuyKernel(1),
                                 ..default()
                             },
                         ))
@@ -197,19 +211,33 @@ fn button_appearance_update(
     }
 }
 
+// TODO enable/disable purchase buttons based on account balance and cost
+// TODO display quantity and cost for each button
+
 fn button_release_listener(
     mut ev_button_released: EventReader<ButtonReleaseEvent>,
-    mut ev_spawn_kernel: EventWriter<SpawnKernelEvent>,
+    mut ev_buy_kernel: EventWriter<KernelPurchaseEvent>,
+    mut ev_spawn_kernel: EventWriter<KernelSpawnEvent>,
 ) {
     for ev in ev_button_released.read() {
         match ev.button_type {
-            ButtonType::BuyKernel => {
-                ev_spawn_kernel.send(SpawnKernelEvent);
+            ButtonType::BuyKernel(quantity) => {
+                ev_buy_kernel.send(KernelPurchaseEvent { quantity });
+                ev_spawn_kernel.send(KernelSpawnEvent { quantity });
                 info!("Buy Kernel pressed");
             }
             ButtonType::Unknown => {
                 warn!("Unknown button pressed");
             }
         }
+    }
+}
+
+fn update_account_balance(
+    bank_account: Res<BankAccount>,
+    mut q_balance_label: Query<&mut Text, With<AccountBalanceLabel>>,
+) {
+    for mut text in q_balance_label.iter_mut() {
+        text.sections[0].value = bank_account.to_string();
     }
 }

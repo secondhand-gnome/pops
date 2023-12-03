@@ -24,7 +24,14 @@ const KERNEL_MASS: f32 = 0.15;
 pub struct KernelPlugin;
 
 #[derive(Event)]
-pub struct SpawnKernelEvent;
+pub struct KernelPurchaseEvent {
+    pub quantity: u64,
+}
+
+#[derive(Event)]
+pub struct KernelSpawnEvent {
+    pub quantity: u64,
+}
 
 #[derive(Event)]
 struct PopEvent {
@@ -35,8 +42,9 @@ impl Plugin for KernelPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_first_kernel)
             .add_systems(Update, (click_listener, pop_kernels, spawn_kernels))
+            .add_event::<KernelPurchaseEvent>()
+            .add_event::<KernelSpawnEvent>()
             .add_event::<PopEvent>()
-            .add_event::<SpawnKernelEvent>()
             .register_type::<Kernel>()
             .register_type::<KernelState>();
     }
@@ -63,37 +71,40 @@ struct Kernel {
     state: KernelState,
 }
 
-fn spawn_first_kernel(mut ev_spawn_kernel: EventWriter<SpawnKernelEvent>) {
-    ev_spawn_kernel.send(SpawnKernelEvent);
+fn spawn_first_kernel(mut ev_spawn_kernel: EventWriter<KernelSpawnEvent>) {
+    ev_spawn_kernel.send(KernelSpawnEvent { quantity: 1 });
 }
 
 fn spawn_kernels(
     mut commands: Commands,
-    mut ev_spawn_kernel: EventReader<SpawnKernelEvent>,
+    mut ev_spawn_kernel: EventReader<KernelSpawnEvent>,
     texture_atlases: Res<TextureAtlasAssets>,
 ) {
-    for _ in ev_spawn_kernel.read() {
-        let mut rng = rand::thread_rng();
-        let translation = Vec3 {
-            x: rng.gen_range(KERNEL_SPAWN_LOCATION_X_RANGE),
-            y: 0.,
-            z: Layer::RawKernel.z(),
-        };
-        commands.spawn((
-            Kernel { ..default() },
-            SpriteSheetBundle {
-                texture_atlas: texture_atlases.kernel.clone(),
-                sprite: TextureAtlasSprite::new(0), // TODO indexes
-                transform: Transform::from_scale(KERNEL_SPRITE_SCALE).with_translation(translation),
-                ..default()
-            },
-            Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
-            ColliderMassProperties::Mass(KERNEL_MASS),
-            RigidBody::Dynamic,
-            CollisionGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
-            SolverGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
-            Name::new("Kernel"),
-        ));
+    for ev in ev_spawn_kernel.read() {
+        for _ in 0..ev.quantity {
+            let mut rng = rand::thread_rng();
+            let translation = Vec3 {
+                x: rng.gen_range(KERNEL_SPAWN_LOCATION_X_RANGE),
+                y: 0.,
+                z: Layer::RawKernel.z(),
+            };
+            commands.spawn((
+                Kernel { ..default() },
+                SpriteSheetBundle {
+                    texture_atlas: texture_atlases.kernel.clone(),
+                    sprite: TextureAtlasSprite::new(0), // TODO indexes
+                    transform: Transform::from_scale(KERNEL_SPRITE_SCALE)
+                        .with_translation(translation),
+                    ..default()
+                },
+                Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
+                ColliderMassProperties::Mass(KERNEL_MASS),
+                RigidBody::Dynamic,
+                CollisionGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
+                SolverGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
+                Name::new("Kernel"),
+            ));
+        }
     }
 }
 
