@@ -13,6 +13,10 @@ use crate::config::*;
 
 fn main() {
     let mut app = App::new();
+
+    // Fix itch.io 403 error - see https://github.com/bevyengine/bevy/pull/10623
+    app.insert_resource(AssetMetaCheck::Never);
+
     app.add_plugins((
         DefaultPlugins
             .set(get_window_plugin())
@@ -25,9 +29,6 @@ fn main() {
         main_game::MainGamePlugin,
         // TODO add ui
     ));
-
-    // Fix itch.io 403 error - see https://github.com/bevyengine/bevy/pull/10623
-    app.insert_resource(AssetMetaCheck::Never);
 
     if config::is_debug() {
         app.add_plugins((
