@@ -5,6 +5,7 @@ pub struct AssetLoaderPlugin;
 #[derive(Resource, Debug)]
 pub struct TextureAssets {
     // Textures go here
+    pub skillet: Handle<Image>,
 }
 
 #[derive(Resource, Debug)]
@@ -35,6 +36,7 @@ fn load_assets(
 
     commands.insert_resource(TextureAssets {
         // Textures go here
+        skillet: png("skillet"),
     });
 
     commands.insert_resource(TextureAtlasAssets {
