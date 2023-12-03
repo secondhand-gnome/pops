@@ -66,12 +66,73 @@ struct UiButtonBundle {
 #[derive(Component)]
 struct AccountBalanceLabel;
 
+#[derive(Component)]
+struct PopCountLabel;
+
 fn spawn_menu(
     mut commands: Commands,
     bank_account: Res<BankAccount>,
     font_assets: Res<FontAssets>,
     texture_assets: Res<TextureAssets>,
 ) {
+    commands
+        .spawn((
+            Name::new("Top panel"),
+            NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.),
+                    margin: UiRect::bottom(Val::Auto),
+                    padding: UiRect::all(BOTTOM_BAR_PADDING),
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::Stretch,
+                    justify_content: JustifyContent::SpaceBetween,
+                    ..default()
+                },
+                ..default()
+            },
+        ))
+        .with_children(|builder| {
+            builder
+                .spawn((
+                    Name::new("Pop counter panel"),
+                    NodeBundle {
+                        style: Style {
+                            flex_direction: FlexDirection::Row,
+                            align_items: AlignItems::Start,
+                            ..default()
+                        },
+                        ..default()
+                    },
+                ))
+                .with_children(|builder| {
+                    builder.spawn((
+                        Name::new("Pop Count Label"),
+                        PopCountLabel,
+                        Label,
+                        TextBundle::from_sections([
+                            TextSection {
+                                value: "Pops: ".to_string(),
+                                style: TextStyle {
+                                    font: font_assets.default.clone(),
+                                    // TODO fix style
+                                    font_size: 80.,
+                                    color: hex("#ffffff"),
+                                },
+                            },
+                            TextSection {
+                                value: "0".to_string(), // TODO
+                                style: TextStyle {
+                                    font: font_assets.default.clone(),
+                                    // TODO fix style
+                                    font_size: 80.,
+                                    color: hex("#ffffff"),
+                                },
+                            },
+                        ]),
+                    ));
+                });
+        });
+
     commands
         .spawn((
             Name::new("Bottom Panel"),
