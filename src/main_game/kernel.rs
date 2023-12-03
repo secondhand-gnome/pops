@@ -52,20 +52,16 @@ fn spawn_first_kernel(mut commands: Commands, texture_atlases: Res<TextureAtlasA
         SpriteSheetBundle {
             texture_atlas: texture_atlases.kernel.clone(),
             sprite: TextureAtlasSprite::new(0), // TODO indexes
-            transform: Transform::from_scale(KERNEL_SPRITE_SCALE),
+            transform: Transform::from_scale(KERNEL_SPRITE_SCALE)
+                .with_translation(Vec3::Z * Layer::Kernel.z()),
             ..default()
         },
         Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
-        // TODO make dynamic
-        // RigidBody::Dynamic,
-        RigidBody::Fixed,
-        // CollisionGroups::new(1.into(), 1.into()),
+        RigidBody::Dynamic,
+        kernel_collision_groups(),
+        SolverGroups::new(kernel_group(), kernel_group()),
         Name::new("Kernel"),
     ));
-    commands
-        .spawn(Collider::ball(0.5))
-        .insert(kernel_collision_groups())
-        .insert(SolverGroups::new(kernel_group(), kernel_group()));
 }
 
 fn click_listener(
