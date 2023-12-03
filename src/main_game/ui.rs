@@ -8,6 +8,7 @@ use crate::{
 
 pub struct UiPlugin;
 
+const BOTTOM_BAR_PADDING: Val = Val::Px(4.);
 const COLOR_BUTTON_TEXT: &str = "#10141f";
 const MENU_BUTTON_FONT_SIZE: f32 = 40.;
 
@@ -57,13 +58,15 @@ fn spawn_menu(
 ) {
     commands
         .spawn((
-            Name::new("MenuRoot"),
+            Name::new("Bottom Panel"),
             NodeBundle {
                 style: Style {
-                    height: Val::Percent(100.),
                     width: Val::Percent(100.),
-                    flex_direction: FlexDirection::Column,
-                    align_items: AlignItems::Center,
+                    margin: UiRect::top(Val::Auto),
+                    padding: UiRect::all(BOTTOM_BAR_PADDING),
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::Stretch,
+                    justify_content: JustifyContent::SpaceBetween,
                     ..default()
                 },
                 ..default()
@@ -72,10 +75,37 @@ fn spawn_menu(
         .with_children(|builder| {
             builder
                 .spawn((
+                    Name::new("Account panel"),
+                    NodeBundle {
+                        style: Style {
+                            flex_direction: FlexDirection::Row,
+                            align_items: AlignItems::Start,
+                            ..default()
+                        },
+                        ..default()
+                    },
+                ))
+                .with_children(|builder| {
+                    builder.spawn((
+                        Name::new("Account balance label"),
+                        Label,
+                        TextBundle::from_section(
+                            "$100",
+                            TextStyle {
+                                font: font_assets.default.clone(),
+                                // TODO fix style
+                                font_size: 80.,
+                                color: hex("#ffffff"),
+                            },
+                        ),
+                    ));
+                });
+
+            builder
+                .spawn((
                     Name::new("Buy menu"),
                     NodeBundle {
                         style: Style {
-                            margin: UiRect::top(Val::Auto),
                             flex_direction: FlexDirection::Row,
                             align_items: AlignItems::Center,
                             ..default()

@@ -10,8 +10,7 @@ pub struct MoneyPlugin;
 
 impl Plugin for MoneyPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(BankAccount::default())
-            .add_systems(Update, print_balance);
+        app.insert_resource(BankAccount::default());
     }
 }
 
@@ -56,10 +55,4 @@ impl fmt::Display for BankAccount {
             self.cents()
         )
     }
-}
-
-fn print_balance(mut acct: ResMut<BankAccount>) {
-    // Gain a nickel every frame
-    acct.credit(1000.05);
-    println!("{}", acct.as_ref());
 }
