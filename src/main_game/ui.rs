@@ -5,9 +5,7 @@ use crate::{asset_loader::FontAssets, config::hex};
 pub struct UiPlugin;
 
 const COLOR_BUTTON_TEXT: &str = "#10141f";
-const COLOR_TITLE_LABEL: &str = "#75a743";
-const MENU_BUTTON_FONT_SIZE: f32 = 80.;
-const TITLE_LABEL_FONT_SIZE: f32 = 120.;
+const MENU_BUTTON_FONT_SIZE: f32 = 40.;
 
 pub const COLOR_BUTTON_BACKGROUND: &str = "#73bed3";
 pub const COLOR_BUTTON_BACKGROUND_HOVER: &str = "#4f8fba";
@@ -56,7 +54,7 @@ fn spawn_menu(mut commands: Commands, font_assets: Res<FontAssets>) {
                     height: Val::Percent(100.),
                     width: Val::Percent(100.),
                     flex_direction: FlexDirection::Column,
-                    align_items: AlignItems::End,
+                    align_items: AlignItems::Center,
                     ..default()
                 },
                 ..default()
@@ -68,9 +66,9 @@ fn spawn_menu(mut commands: Commands, font_assets: Res<FontAssets>) {
                     Name::new("Buy menu"),
                     NodeBundle {
                         style: Style {
-                            // align_self: AlignSelf::FlexEnd,
-                            // flex_direction: FlexDirection::Row,
-                            margin: UiRect::bottom(Val::Percent(10.)),
+                            margin: UiRect::top(Val::Auto),
+                            flex_direction: FlexDirection::Row,
+                            align_items: AlignItems::Center,
                             ..default()
                         },
                         ..default()
