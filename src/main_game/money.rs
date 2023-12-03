@@ -9,7 +9,7 @@ use std::{fmt, ops::Mul};
 
 use super::kernel::KernelPurchaseEvent;
 
-const INITIAL_ACCOUNT_BALANCE: f32 = 10.;
+const INITIAL_ACCOUNT_BALANCE: f32 = 1.00;
 
 pub struct MoneyPlugin;
 
@@ -61,7 +61,7 @@ impl fmt::Display for BankAccount {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "${}.{}",
+            "${}.{:0>2}",
             self.whole_dollars().to_formatted_string(&Locale::en),
             self.cents()
         )
