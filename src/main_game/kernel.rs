@@ -1,5 +1,8 @@
+use std::{f32::consts::PI, ops::Range};
+
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy_rapier2d::{parry::math::AngularInertia, prelude::*};
+use rand::Rng;
 
 use crate::{asset_loader::TextureAtlasAssets, input::ClickEvent};
 
@@ -13,6 +16,8 @@ const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
 
 // A kernel weighs 0.15 grams
 const KERNEL_MASS: f32 = 0.15;
+
+// A kernel is 6mm in diameter
 
 pub struct KernelPlugin;
 
@@ -109,14 +114,22 @@ fn pop_kernels(
                 sprite.index = KernelState::Popped.sprite_index();
 
                 // Apply an impulse to the kernel
-                commands.entity(entity).insert(ExternalImpulse {
-                    // TODO randomize direction, keeping constant magnitude
-                    impulse: Vec2::new(15., 15.),
-                    torque_impulse: 0.,
-                });
+                commands.entity(entity).insert(kernel_pop_impulse());
 
                 debug!("Pop!");
             }
         }
+    }
+}
+
+fn kernel_pop_impulse() -> ExternalImpulse {
+    const MAGNITUDE: f32 = 30.;
+    const DIRECTION_RANGE: Range<f32> = (PI / 6.)..(PI * 5. / 6.);
+
+    let mut rng = rand::thread_rng();
+
+    ExternalImpulse {
+        impulse: MAGNITUDE * Vec2::from_angle(rng.gen_range(DIRECTION_RANGE)),
+        torque_impulse: 0., // TODO add torque based on angle
     }
 }
