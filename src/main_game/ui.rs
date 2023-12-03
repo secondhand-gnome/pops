@@ -163,6 +163,16 @@ fn button_appearance_update(
     }
 }
 
-fn button_release_listener() {
-    // TODO
+fn button_release_listener(mut ev_button_released: EventReader<ButtonReleaseEvent>) {
+    for ev in ev_button_released.read() {
+        match ev.button_type {
+            ButtonType::BuyKernel => {
+                // TODO actually buy a kernel
+                info!("Buy Kernel pressed");
+            }
+            ButtonType::Unknown => {
+                warn!("Unknown button pressed");
+            }
+        }
+    }
 }
