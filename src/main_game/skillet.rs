@@ -38,6 +38,7 @@ fn skillet_collider() -> Collider {
             Vec2::new(-100., -4.),
             Vec2::new(100., -4.),
             Vec2::new(100., 128.),
+            Vec2::new(-100., 128.),
         ],
         None,
     )
