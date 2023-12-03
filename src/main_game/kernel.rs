@@ -118,16 +118,27 @@ fn click_listener(
 fn pop_kernels(
     mut commands: Commands,
     mut ev_pop: EventReader<PopEvent>,
-    mut q_kernels: Query<(Entity, &mut Kernel, &mut TextureAtlasSprite)>,
+    mut q_kernels: Query<(
+        Entity,
+        &mut Kernel,
+        &mut TextureAtlasSprite,
+        &mut CollisionGroups,
+    )>,
 ) {
     for ev in ev_pop.read() {
-        for (entity, mut kernel, mut sprite) in q_kernels.iter_mut() {
+        for (entity, mut kernel, mut sprite, mut collision_groups) in q_kernels.iter_mut() {
             if ev.kernel == entity && kernel.state == KernelState::Raw {
                 // Change the kernel's state to Popped
                 kernel.state = KernelState::Popped;
 
                 // Change the kernel's sprite
                 sprite.index = KernelState::Popped.sprite_index();
+
+                // Change the kernel's collision groups
+                // It's a popped kernel
+                collision_groups.memberships = vec![Layer::PoppedKernel].group();
+                // that collides with other popped kernels.
+                collision_groups.filters |= vec![Layer::PoppedKernel].group();
 
                 // Apply an impulse to the kernel
                 commands.entity(entity).insert(kernel_pop_impulse());
