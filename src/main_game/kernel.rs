@@ -77,7 +77,7 @@ fn spawn_kernels(
         let translation = Vec3 {
             x: rng.gen_range(KERNEL_SPAWN_LOCATION_X_RANGE),
             y: 0.,
-            z: Layer::Kernel.z(),
+            z: Layer::RawKernel.z(),
         };
         commands.spawn((
             Kernel { ..default() },
@@ -90,8 +90,8 @@ fn spawn_kernels(
             Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
             ColliderMassProperties::Mass(KERNEL_MASS),
             RigidBody::Dynamic,
-            kernel_collision_groups(),
-            SolverGroups::new(kernel_group(), kernel_group()),
+            CollisionGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
+            SolverGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
             Name::new("Kernel"),
         ));
     }
@@ -103,21 +103,16 @@ fn click_listener(
     mut ev_pop: EventWriter<PopEvent>,
 ) {
     for ev in ev_click.read() {
-        let filter = QueryFilter::new().groups(kernel_collision_groups());
+        let filter = QueryFilter::new().groups(CollisionGroups::new(
+            Group::ALL,
+            vec![Layer::RawKernel].group(),
+        ));
         rapier_context.intersections_with_point(ev.pos, filter, |entity| {
             debug!("Clicked on entity {:?}", entity);
             ev_pop.send(PopEvent { kernel: entity });
             true
         });
     }
-}
-
-fn kernel_group() -> Group {
-    vec![Layer::Kernel].join_groups()
-}
-
-fn kernel_collision_groups() -> CollisionGroups {
-    CollisionGroups::new(kernel_group(), kernel_group())
 }
 
 fn pop_kernels(
