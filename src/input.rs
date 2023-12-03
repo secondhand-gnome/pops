@@ -49,7 +49,7 @@ fn update_mouse(
     if mouse_buttons.just_pressed(MouseButton::Left) {
         match mouse.pos {
             Some(pos) => {
-                info!("Click! at {:?}", pos);
+                debug!("Click! at {:?}", pos);
                 ev_click.send(ClickEvent { pos });
             }
             None => {

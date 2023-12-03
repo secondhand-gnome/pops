@@ -10,10 +10,14 @@ const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
 
 pub struct KernelPlugin;
 
+#[derive(Event)]
+struct PopEvent(Entity);
+
 impl Plugin for KernelPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_first_kernel)
-            .add_systems(Update, click_listener)
+            .add_systems(Update, (click_listener, pop_kernels))
+            .add_event::<PopEvent>()
             .register_type::<Kernel>()
             .register_type::<KernelState>();
     }
@@ -53,11 +57,16 @@ fn spawn_first_kernel(mut commands: Commands, texture_atlases: Res<TextureAtlasA
         .insert(SolverGroups::new(kernel_group(), kernel_group()));
 }
 
-fn click_listener(mut ev_click: EventReader<ClickEvent>, rapier_context: Res<RapierContext>) {
+fn click_listener(
+    mut ev_click: EventReader<ClickEvent>,
+    rapier_context: Res<RapierContext>,
+    mut ev_pop: EventWriter<PopEvent>,
+) {
     for ev in ev_click.read() {
         let filter = QueryFilter::new().groups(kernel_collision_groups());
         rapier_context.intersections_with_point(ev.pos, filter, |entity| {
-            info!("Clicked on entity {:?}", entity);
+            debug!("Clicked on entity {:?}", entity);
+            ev_pop.send(PopEvent(entity));
             true
         });
     }
@@ -69,4 +78,17 @@ fn kernel_group() -> Group {
 
 fn kernel_collision_groups() -> CollisionGroups {
     CollisionGroups::new(kernel_group(), kernel_group())
+}
+
+fn pop_kernels(
+    mut commands: Commands,
+    mut ev_pop: EventReader<PopEvent>,
+    mut q_kernels: Query<(Entity, &mut Kernel)>,
+) {
+    for ev in ev_pop.read() {
+        for (entity, mut kernel) in q_kernels.iter_mut() {
+            // TODO
+            debug!("Pop!");
+        }
+    }
 }
