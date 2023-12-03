@@ -3,6 +3,8 @@ use bevy_rapier2d::prelude::*;
 
 use crate::{asset_loader::TextureAtlasAssets, input::ClickEvent};
 
+use super::layers::{CollisionGroup, CollisionGroupMethods};
+
 const KERNEL_SPRITE_SIZE_PX: Vec2 = Vec2::new(16., 16.);
 const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
 
@@ -42,16 +44,29 @@ fn spawn_first_kernel(mut commands: Commands, texture_atlases: Res<TextureAtlasA
         // TODO make dynamic
         // RigidBody::Dynamic,
         RigidBody::Fixed,
+        // CollisionGroups::new(1.into(), 1.into()),
         Name::new("Kernel"),
     ));
+    commands
+        .spawn(Collider::ball(0.5))
+        .insert(kernel_collision_groups())
+        .insert(SolverGroups::new(kernel_group(), kernel_group()));
 }
 
 fn click_listener(mut ev_click: EventReader<ClickEvent>, rapier_context: Res<RapierContext>) {
     for ev in ev_click.read() {
-        let filter = QueryFilter::default();
+        let filter = QueryFilter::new().groups(kernel_collision_groups());
         rapier_context.intersections_with_point(ev.pos, filter, |entity| {
             info!("Clicked on entity {:?}", entity);
             true
         });
     }
+}
+
+fn kernel_group() -> Group {
+    vec![CollisionGroup::Kernel].join_groups()
+}
+
+fn kernel_collision_groups() -> CollisionGroups {
+    CollisionGroups::new(kernel_group(), kernel_group())
 }

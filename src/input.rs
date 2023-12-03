@@ -26,7 +26,7 @@ impl Plugin for InputPlugin {
 
 fn update_mouse(
     mut mouse: ResMut<Mouse>,
-    mut mouse_buttons: Res<Input<MouseButton>>,
+    mouse_buttons: Res<Input<MouseButton>>,
     mut ev_click: EventWriter<ClickEvent>,
     // TODO support touch input
     q_window: Query<&Window>,

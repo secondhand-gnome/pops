@@ -1,4 +1,5 @@
 mod kernel;
+mod layers;
 
 use bevy::prelude::*;
 
