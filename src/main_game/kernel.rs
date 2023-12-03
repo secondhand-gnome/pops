@@ -1,7 +1,7 @@
 use std::{f32::consts::PI, ops::Range};
 
 use bevy::prelude::*;
-use bevy_rapier2d::{parry::math::AngularInertia, prelude::*};
+use bevy_rapier2d::prelude::*;
 use rand::Rng;
 
 use crate::{asset_loader::TextureAtlasAssets, input::ClickEvent};
@@ -9,7 +9,8 @@ use crate::{asset_loader::TextureAtlasAssets, input::ClickEvent};
 use super::layers::{CollisionGroupMethods, Layer};
 
 const KERNEL_SPRITE_SIZE_PX: Vec2 = Vec2::new(16., 16.);
-const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
+const KERNEL_SPRITE_SCALE_RAW: Vec3 = Vec3::new(1., 1., 1.);
+const KERNEL_SPRITE_SCALE_POPPED: Vec3 = Vec3::new(2., 2., 1.);
 
 // See article "Physical properties of popcorn kernels"
 // https://www.sciencedirect.com/science/article/abs/pii/S0260877404006016
@@ -93,7 +94,7 @@ fn spawn_kernels(
                 SpriteSheetBundle {
                     texture_atlas: texture_atlases.kernel.clone(),
                     sprite: TextureAtlasSprite::new(0), // TODO indexes
-                    transform: Transform::from_scale(KERNEL_SPRITE_SCALE)
+                    transform: Transform::from_scale(KERNEL_SPRITE_SCALE_RAW)
                         .with_translation(translation),
                     ..default()
                 },
@@ -134,10 +135,13 @@ fn pop_kernels(
         &mut Kernel,
         &mut TextureAtlasSprite,
         &mut CollisionGroups,
+        &mut Transform,
     )>,
 ) {
     for ev in ev_pop.read() {
-        for (entity, mut kernel, mut sprite, mut collision_groups) in q_kernels.iter_mut() {
+        for (entity, mut kernel, mut sprite, mut collision_groups, mut transform) in
+            q_kernels.iter_mut()
+        {
             if ev.kernel == entity && kernel.state == KernelState::Raw {
                 // Change the kernel's state to Popped
                 kernel.state = KernelState::Popped;
@@ -153,6 +157,9 @@ fn pop_kernels(
 
                 // Apply an impulse to the kernel
                 commands.entity(entity).insert(kernel_pop_impulse());
+
+                // Change the scale
+                transform.scale = KERNEL_SPRITE_SCALE_POPPED;
 
                 debug!("Pop!");
             }
