@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use crate::{
     asset_loader::{FontAssets, TextureAssets},
     config::hex,
+    main_game::kernel::SpawnKernelEvent,
 };
 
 pub struct UiPlugin;
@@ -163,11 +164,14 @@ fn button_appearance_update(
     }
 }
 
-fn button_release_listener(mut ev_button_released: EventReader<ButtonReleaseEvent>) {
+fn button_release_listener(
+    mut ev_button_released: EventReader<ButtonReleaseEvent>,
+    mut ev_spawn_kernel: EventWriter<SpawnKernelEvent>,
+) {
     for ev in ev_button_released.read() {
         match ev.button_type {
             ButtonType::BuyKernel => {
-                // TODO actually buy a kernel
+                ev_spawn_kernel.send(SpawnKernelEvent);
                 info!("Buy Kernel pressed");
             }
             ButtonType::Unknown => {

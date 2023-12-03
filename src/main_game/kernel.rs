@@ -22,6 +22,9 @@ const KERNEL_MASS: f32 = 0.15;
 pub struct KernelPlugin;
 
 #[derive(Event)]
+pub struct SpawnKernelEvent;
+
+#[derive(Event)]
 struct PopEvent {
     kernel: Entity,
 }
@@ -29,8 +32,9 @@ struct PopEvent {
 impl Plugin for KernelPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_first_kernel)
-            .add_systems(Update, (click_listener, pop_kernels))
+            .add_systems(Update, (click_listener, pop_kernels, spawn_kernels))
             .add_event::<PopEvent>()
+            .add_event::<SpawnKernelEvent>()
             .register_type::<Kernel>()
             .register_type::<KernelState>();
     }
@@ -57,23 +61,33 @@ struct Kernel {
     state: KernelState,
 }
 
-fn spawn_first_kernel(mut commands: Commands, texture_atlases: Res<TextureAtlasAssets>) {
-    commands.spawn((
-        Kernel { ..default() },
-        SpriteSheetBundle {
-            texture_atlas: texture_atlases.kernel.clone(),
-            sprite: TextureAtlasSprite::new(0), // TODO indexes
-            transform: Transform::from_scale(KERNEL_SPRITE_SCALE)
-                .with_translation(Vec3::Z * Layer::Kernel.z()),
-            ..default()
-        },
-        Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
-        ColliderMassProperties::Mass(KERNEL_MASS),
-        RigidBody::Dynamic,
-        kernel_collision_groups(),
-        SolverGroups::new(kernel_group(), kernel_group()),
-        Name::new("Kernel"),
-    ));
+fn spawn_first_kernel(mut ev_spawn_kernel: EventWriter<SpawnKernelEvent>) {
+    ev_spawn_kernel.send(SpawnKernelEvent);
+}
+
+fn spawn_kernels(
+    mut commands: Commands,
+    mut ev_spawn_kernel: EventReader<SpawnKernelEvent>,
+    texture_atlases: Res<TextureAtlasAssets>,
+) {
+    for _ in ev_spawn_kernel.read() {
+        commands.spawn((
+            Kernel { ..default() },
+            SpriteSheetBundle {
+                texture_atlas: texture_atlases.kernel.clone(),
+                sprite: TextureAtlasSprite::new(0), // TODO indexes
+                transform: Transform::from_scale(KERNEL_SPRITE_SCALE)
+                    .with_translation(Vec3::Z * Layer::Kernel.z()),
+                ..default()
+            },
+            Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
+            ColliderMassProperties::Mass(KERNEL_MASS),
+            RigidBody::Dynamic,
+            kernel_collision_groups(),
+            SolverGroups::new(kernel_group(), kernel_group()),
+            Name::new("Kernel"),
+        ));
+    }
 }
 
 fn click_listener(
