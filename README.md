@@ -3,7 +3,7 @@
 Created for [Bevy Game Jam #4](https://itch.io/jam/bevy-jam-4).
 
 ## Feature checklist
-* [ ] A kernel that pops when clicked
+* [x] A kernel that pops when clicked
 * [ ] Rendering a lot of kernels at once
 * [ ] Button that creates more kernels
 * [ ] Button that creates a kettle

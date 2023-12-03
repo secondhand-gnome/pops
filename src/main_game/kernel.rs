@@ -11,7 +11,9 @@ const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
 pub struct KernelPlugin;
 
 #[derive(Event)]
-struct PopEvent(Entity);
+struct PopEvent {
+    kernel: Entity,
+}
 
 impl Plugin for KernelPlugin {
     fn build(&self, app: &mut App) {
@@ -23,11 +25,20 @@ impl Plugin for KernelPlugin {
     }
 }
 
-#[derive(Debug, Default, Reflect)]
+#[derive(Debug, Default, Reflect, PartialEq, Eq)]
 enum KernelState {
     #[default]
     Raw,
     Popped,
+}
+
+impl KernelState {
+    fn sprite_index(&self) -> usize {
+        match self {
+            Self::Raw => 0,
+            Self::Popped => 1,
+        }
+    }
 }
 
 #[derive(Component, Debug, Default, Reflect)]
@@ -66,7 +77,7 @@ fn click_listener(
         let filter = QueryFilter::new().groups(kernel_collision_groups());
         rapier_context.intersections_with_point(ev.pos, filter, |entity| {
             debug!("Clicked on entity {:?}", entity);
-            ev_pop.send(PopEvent(entity));
+            ev_pop.send(PopEvent { kernel: entity });
             true
         });
     }
@@ -81,14 +92,16 @@ fn kernel_collision_groups() -> CollisionGroups {
 }
 
 fn pop_kernels(
-    mut commands: Commands,
     mut ev_pop: EventReader<PopEvent>,
-    mut q_kernels: Query<(Entity, &mut Kernel)>,
+    mut q_kernels: Query<(Entity, &mut Kernel, &mut TextureAtlasSprite)>,
 ) {
     for ev in ev_pop.read() {
-        for (entity, mut kernel) in q_kernels.iter_mut() {
-            // TODO
-            debug!("Pop!");
+        for (entity, mut kernel, mut sprite) in q_kernels.iter_mut() {
+            if ev.kernel == entity && kernel.state == KernelState::Raw {
+                kernel.state = KernelState::Popped;
+                sprite.index = KernelState::Popped.sprite_index();
+                debug!("Pop!");
+            }
         }
     }
 }
