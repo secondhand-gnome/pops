@@ -18,7 +18,8 @@ fn spawn_skillet(mut commands: Commands, texture_assets: Res<TextureAssets>) {
     commands.spawn((
         SpriteBundle {
             texture: texture_assets.skillet.clone(),
-            transform: Transform::from_scale(SKILLET_SPRITE_SCALE),
+            transform: Transform::from_scale(SKILLET_SPRITE_SCALE)
+                .with_translation(Vec3::NEG_Y * SKILLET_SPRITE_SCALE * 16.),
             ..default()
         },
         // TODO collider

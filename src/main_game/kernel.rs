@@ -3,7 +3,7 @@ use bevy_rapier2d::prelude::*;
 
 use crate::{asset_loader::TextureAtlasAssets, input::ClickEvent};
 
-use super::layers::{CollisionGroup, CollisionGroupMethods};
+use super::layers::{CollisionGroupMethods, Layer};
 
 const KERNEL_SPRITE_SIZE_PX: Vec2 = Vec2::new(16., 16.);
 const KERNEL_SPRITE_SCALE: Vec3 = Vec3::new(2., 2., 1.);
@@ -84,7 +84,7 @@ fn click_listener(
 }
 
 fn kernel_group() -> Group {
-    vec![CollisionGroup::Kernel].join_groups()
+    vec![Layer::Kernel].join_groups()
 }
 
 fn kernel_collision_groups() -> CollisionGroups {
