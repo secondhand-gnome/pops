@@ -39,11 +39,19 @@ fn spawn_first_kernel(mut commands: Commands, texture_atlases: Res<TextureAtlasA
             ..default()
         },
         Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
-        RigidBody::Dynamic,
+        // TODO make dynamic
+        // RigidBody::Dynamic,
+        RigidBody::Fixed,
         Name::new("Kernel"),
     ));
 }
 
-fn click_listener(ev_click: EventReader<ClickEvent>) {
-    // TODO respond to clicks
+fn click_listener(mut ev_click: EventReader<ClickEvent>, rapier_context: Res<RapierContext>) {
+    for ev in ev_click.read() {
+        let filter = QueryFilter::default();
+        rapier_context.intersections_with_point(ev.pos, filter, |entity| {
+            info!("Clicked on entity {:?}", entity);
+            true
+        });
+    }
 }

@@ -7,7 +7,7 @@ pub struct InputPlugin;
 /// A click (or touch) event.
 #[derive(Event)]
 pub struct ClickEvent {
-    pos: Vec2,
+    pub pos: Vec2,
 }
 
 #[derive(Resource, Debug)]
