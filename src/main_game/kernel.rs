@@ -3,7 +3,6 @@ use std::{f32::consts::PI, ops::Range};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use bigdecimal::num_bigint::BigInt;
-use num_format::{Locale, ToFormattedString};
 use rand::Rng;
 use std::fmt;
 
@@ -15,7 +14,7 @@ use super::{
     layers::{CollisionGroupMethods, Layer},
 };
 
-pub const POSSIBLE_KERNEL_BUY_QUANTITIES: [u64; 3] = [1, 10, 100];
+pub const POSSIBLE_KERNEL_BUY_QUANTITIES: [u64; 5] = [1, 10, 50, 100, 250];
 pub const POSSIBLE_SELL_QUANTITIES: [u64; 5] = [100, 500, 1000, 10000, 100000];
 
 const KERNEL_SPRITE_SIZE_PX: Vec2 = Vec2::new(16., 16.);
@@ -65,6 +64,10 @@ struct Popcorn;
 impl PopCounter {
     fn count_pop(&mut self) {
         self.count += BigInt::from(1);
+    }
+
+    pub fn has_popped_at_least(&self, quantity: u64) -> bool {
+        self.count >= BigInt::from(quantity)
     }
 }
 

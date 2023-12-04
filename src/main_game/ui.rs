@@ -504,22 +504,20 @@ fn update_pop_count(
 fn update_button_visibility(
     bank_account: Res<BankAccount>,
     price_checker: Res<PriceChecker>,
+    pop_counter: Res<PopCounter>,
     popcorn_counter: Res<PopcornCounter>,
     mut q_buttons: Query<(&ButtonType, &mut Visibility), With<Node>>,
 ) {
     for (button_type, mut visibility) in q_buttons.iter_mut() {
         match button_type {
             ButtonType::BuyKernel(quantity) => {
-                // TODO add additional requirement to buy large quantities
-                // TODO create a Milestones module and check that you've popped at least 10? kernels
-                let cost = price_checker.raw_kernels(*quantity);
-                *visibility = if bank_account.has_at_least(cost) {
+                *visibility = if pop_counter.has_popped_at_least(*quantity)
+                    && bank_account.has_at_least(price_checker.raw_kernels(*quantity))
+                {
                     Visibility::Inherited
                 } else {
                     Visibility::Hidden
                 };
-                // TODO add additional requirement to buy large quantities
-                // TODO create a Milestones module and check that you've popped at least 10? kernels
             }
             ButtonType::SellPopcorn(quantity) => {
                 *visibility = if popcorn_counter.quantity() >= *quantity as i64 {
