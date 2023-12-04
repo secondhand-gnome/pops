@@ -15,6 +15,12 @@ impl PriceChecker {
             q * 0.01
         }
     }
+
+    pub fn popcorn(&self, quantity: u64) -> f32 {
+        // TODO incorporate premiums based on state
+        let q = quantity as f32;
+        q * 0.04
+    }
 }
 
 impl Plugin for EconomyPlugin {

@@ -71,14 +71,14 @@ impl PopCounter {
 #[derive(Resource, Default)]
 /// Holds the current amount of popped kernels that have not yet been sold.
 pub struct PopcornCounter {
-    quantity: u64,
+    quantity: i64,
 }
 
 impl PopcornCounter {
     pub fn available_sell_quantities(&self) -> Vec<u64> {
         POSSIBLE_SELL_QUANTITIES
             .iter()
-            .filter(|&x| self.quantity >= *x)
+            .filter(|&x| self.quantity >= *x as i64)
             .map(|x| *x)
             .collect::<Vec<_>>()
     }
@@ -100,7 +100,7 @@ impl Plugin for KernelPlugin {
                     pop_kernels,
                     spawn_kernels,
                     kernel_purchase_listener,
-                    popcorn_sell_listener,
+                    sell_popcorn,
                 ),
             )
             .add_event::<KernelPurchaseEvent>()
@@ -258,12 +258,22 @@ fn kernel_purchase_listener(
     }
 }
 
-fn popcorn_sell_listener(
+fn sell_popcorn(
     mut commands: Commands,
     mut ev_sell_popcorn: EventReader<PopcornSellEvent>,
+    mut popcorn_counter: ResMut<PopcornCounter>,
+    mut bank_account: ResMut<BankAccount>,
+    price_checker: Res<PriceChecker>,
     q_popcorn: Query<Entity, With<Popcorn>>,
 ) {
     for ev in ev_sell_popcorn.read() {
+        // Subtract from the popcorn stockpile
+        popcorn_counter.quantity -= ev.quantity as i64;
+
+        // Credit the bank account
+        bank_account.credit(price_checker.popcorn(ev.quantity));
+
+        // Despawn popcorn entities
         for (index, entity) in q_popcorn.iter().enumerate() {
             if (index as u64) < ev.quantity {
                 commands.entity(entity).despawn();

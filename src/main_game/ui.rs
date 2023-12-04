@@ -387,10 +387,10 @@ fn spawn_menu(
                                                 ));
                                             });
 
-                                        let price = price_checker.raw_kernels(quantity);
+                                        let price = price_checker.popcorn(quantity);
                                         builder.spawn((
                                             Name::new(format!(
-                                                "Buy Kernel price label - {quantity}"
+                                                "Sell Kernel price label - {quantity}"
                                             )),
                                             TextBundle::from_section(
                                                 format!("${:.2}", price),
