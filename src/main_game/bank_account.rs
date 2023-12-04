@@ -1,4 +1,3 @@
-// TODO rename to bank_account
 use bevy::prelude::*;
 use bigdecimal::{
     num_bigint::{BigInt, ToBigInt},
@@ -11,9 +10,9 @@ use super::kernel::KernelPurchaseEvent;
 
 const INITIAL_ACCOUNT_BALANCE: f32 = 1.00;
 
-pub struct MoneyPlugin;
+pub struct BankAccountPlugin;
 
-impl Plugin for MoneyPlugin {
+impl Plugin for BankAccountPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(BankAccount::default())
             .add_systems(Startup, initial_bank_credit)

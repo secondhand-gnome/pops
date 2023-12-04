@@ -9,7 +9,7 @@ use crate::{
 
 use super::{
     kernel::{KernelPurchaseEvent, PopCounter},
-    money::BankAccount,
+    bank_account::BankAccount,
 };
 
 pub struct UiPlugin;

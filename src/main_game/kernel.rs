@@ -55,7 +55,11 @@ impl PopCounter {
 
 impl fmt::Display for PopCounter {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.count)
+        write!(
+            f,
+            "{}",
+            self.count
+        )
     }
 }
 
