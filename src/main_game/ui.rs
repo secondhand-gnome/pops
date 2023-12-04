@@ -3,7 +3,7 @@ use bevy_rapier2d::na::balancing::balance_parlett_reinsch;
 
 use crate::{
     asset_loader::{FontAssets, TextureAssets},
-    config::hex,
+    config::{hex, ENABLE_CHEATS},
     main_game::kernel::KernelSpawnEvent,
 };
 
@@ -511,8 +511,9 @@ fn update_button_visibility(
     for (button_type, mut visibility) in q_buttons.iter_mut() {
         match button_type {
             ButtonType::BuyKernel(quantity) => {
-                *visibility = if pop_counter.has_popped_at_least(*quantity)
-                    && bank_account.has_at_least(price_checker.raw_kernels(*quantity))
+                *visibility = if ENABLE_CHEATS
+                    || pop_counter.has_popped_at_least(*quantity)
+                        && bank_account.has_at_least(price_checker.raw_kernels(*quantity))
                 {
                     Visibility::Inherited
                 } else {
@@ -520,7 +521,7 @@ fn update_button_visibility(
                 };
             }
             ButtonType::SellPopcorn(quantity) => {
-                *visibility = if popcorn_counter.quantity() >= *quantity as i64 {
+                *visibility = if ENABLE_CHEATS || popcorn_counter.quantity() >= *quantity as i64 {
                     Visibility::Inherited
                 } else {
                     Visibility::Hidden

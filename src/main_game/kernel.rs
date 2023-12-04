@@ -144,15 +144,15 @@ fn spawn_kernels(
     texture_atlases: Res<TextureAtlasAssets>,
 ) {
     for ev in ev_spawn_kernel.read() {
-        for _ in 0..ev.quantity {
+        for i in 0..ev.quantity {
             let mut rng = rand::thread_rng();
             let translation = Vec3 {
                 x: rng.gen_range(KERNEL_SPAWN_LOCATION_X_RANGE),
                 y: 0.,
                 z: Layer::RawKernel.z(),
             };
-            commands.spawn((
-                Kernel { ..default() },
+            let entity = commands.spawn(Kernel::default()).id();
+            commands.entity(entity).insert((
                 SpriteSheetBundle {
                     texture_atlas: texture_atlases.kernel.clone(),
                     sprite: TextureAtlasSprite::new(0), // TODO indexes
@@ -160,11 +160,14 @@ fn spawn_kernels(
                         .with_translation(translation),
                     ..default()
                 },
-                Collider::cuboid(KERNEL_SPRITE_SIZE_PX.x / 2., KERNEL_SPRITE_SIZE_PX.y / 2.), // TODO custom collider
-                ColliderMassProperties::Mass(KERNEL_MASS),
+                AdditionalMassProperties::Mass(KERNEL_MASS),
                 RigidBody::Dynamic,
                 CollisionGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
                 Name::new("Kernel"),
+            ));
+            commands.entity(entity).insert(Collider::cuboid(
+                KERNEL_SPRITE_SIZE_PX.x / 2.,
+                KERNEL_SPRITE_SIZE_PX.y / 2.,
             ));
         }
     }

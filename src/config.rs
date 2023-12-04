@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+pub const ENABLE_CHEATS: bool = true;
+
 pub const BACKGROUND_COLOR: &str = "#3c5e8b";
 pub const GAME_TITLE: &str = "Gotta Have My Pops";
 pub const RAPIER_PIXELS_PER_METER: f32 = 2000.;
