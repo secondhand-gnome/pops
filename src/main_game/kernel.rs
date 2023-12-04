@@ -57,6 +57,23 @@ impl PopCounter {
     }
 }
 
+#[derive(Resource, Default)]
+/// Holds the current amount of popped kernels that have not yet been sold.
+pub struct PopcornCounter {
+    quantity: u64,
+}
+
+impl PopcornCounter {
+    pub fn available_sell_quantities(&self) -> Vec<u64> {
+        const POSSIBLE_SELL_QUANTITIES: [u64; 5] = [100, 500, 1000, 10000, 100000];
+        POSSIBLE_SELL_QUANTITIES
+            .iter()
+            .filter(|&x| self.quantity >= *x)
+            .map(|x| *x)
+            .collect::<Vec<_>>()
+    }
+}
+
 impl fmt::Display for PopCounter {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.count)
@@ -79,6 +96,7 @@ impl Plugin for KernelPlugin {
             .add_event::<KernelSpawnEvent>()
             .add_event::<PopEvent>()
             .insert_resource(PopCounter::default())
+            .insert_resource(PopcornCounter::default())
             .register_type::<Kernel>()
             .register_type::<KernelState>();
     }
@@ -164,6 +182,7 @@ fn pop_kernels(
     mut commands: Commands,
     mut ev_pop: EventReader<PopEvent>,
     mut pop_counter: ResMut<PopCounter>,
+    mut popcorn_counter: ResMut<PopcornCounter>,
     mut q_kernels: Query<(
         Entity,
         &mut Kernel,
@@ -178,6 +197,7 @@ fn pop_kernels(
         {
             if ev.kernel == entity && kernel.state == KernelState::Raw {
                 pop_counter.count_pop();
+                popcorn_counter.quantity += 1;
 
                 // Change the kernel's state to Popped
                 kernel.state = KernelState::Popped;

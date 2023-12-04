@@ -10,7 +10,7 @@ use crate::{
 use super::{
     bank_account::BankAccount,
     economy::PriceChecker,
-    kernel::{KernelPurchaseEvent, PopCounter},
+    kernel::{KernelPurchaseEvent, PopCounter, PopcornCounter},
 };
 
 pub struct UiPlugin;
@@ -81,6 +81,7 @@ fn spawn_menu(
     mut commands: Commands,
     bank_account: Res<BankAccount>,
     price_checker: Res<PriceChecker>,
+    popcorn_counter: Res<PopcornCounter>,
     font_assets: Res<FontAssets>,
     texture_assets: Res<TextureAssets>,
 ) {
@@ -333,8 +334,8 @@ fn spawn_menu(
                             },
                         ))
                         .with_children(|builder| {
-                            // TODO only display options if we have enough to sell
-                            let unlocked_sell_options = vec![100];
+                            // Compare using the PopcornCounter
+                            let unlocked_sell_options = popcorn_counter.available_sell_quantities();
                             for quantity in unlocked_sell_options {
                                 builder
                                     .spawn(NodeBundle {
@@ -455,7 +456,6 @@ fn button_appearance_update(
 }
 
 // TODO enable/disable purchase buttons based on account balance and cost
-// TODO display quantity and cost for each button
 
 fn button_release_listener(
     mut ev_button_released: EventReader<ButtonReleaseEvent>,
