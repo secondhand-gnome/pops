@@ -144,12 +144,12 @@ fn spawn_kernels(
     texture_atlases: Res<TextureAtlasAssets>,
 ) {
     for ev in ev_spawn_kernel.read() {
-        for _ in 0..ev.quantity {
+        for i in 0..ev.quantity {
             let mut rng = rand::thread_rng();
             let translation = Vec3 {
                 x: rng.gen_range(KERNEL_SPAWN_LOCATION_X_RANGE),
                 y: 0.,
-                z: Layer::RawKernel.z(),
+                z: Layer::RawKernel.z() + (i as f32 / ev.quantity as f32),
             };
             let entity = commands.spawn(Kernel::default()).id();
             commands.entity(entity).insert((
@@ -231,7 +231,7 @@ fn pop_kernels(
 
                 // Change the scale and layer
                 transform.scale = KERNEL_SPRITE_SCALE_POPPED;
-                transform.translation.z = Layer::PoppedKernel.z();
+                transform.translation.z += Layer::PoppedKernel.z() - Layer::RawKernel.z();
 
                 debug!("Pop!");
             }
