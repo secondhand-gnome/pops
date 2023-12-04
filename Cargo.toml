@@ -9,7 +9,10 @@ edition = "2021"
 bevy = "0.12.1"
 bevy-inspector-egui = "0.21.0"
 bevy_kira_audio = "0.18.0"
-bevy_rapier2d = "0.23.0"
+bevy_rapier2d = { version = "0.23.0", features = [
+    "debug-render-2d",
+    "wasm-bindgen",
+] }
 bigdecimal = "0.4.2"
 log = "0.4.20"
 num-format = { version = "0.4.3", features = ["with-num-bigint"] }
