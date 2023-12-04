@@ -10,7 +10,10 @@ use crate::{
 use super::{
     bank_account::BankAccount,
     economy::PriceChecker,
-    kernel::{KernelPurchaseEvent, PopCounter, PopcornCounter},
+    kernel::{
+        KernelPurchaseEvent, PopCounter, PopcornCounter, POSSIBLE_KERNEL_BUY_QUANTITIES,
+        POSSIBLE_SELL_QUANTITIES,
+    },
 };
 
 pub struct UiPlugin;
@@ -226,8 +229,7 @@ fn spawn_menu(
                             },
                         ))
                         .with_children(|builder| {
-                            let unlocked_kernel_purchase_options = vec![1, 10];
-                            for quantity in unlocked_kernel_purchase_options {
+                            for &quantity in POSSIBLE_KERNEL_BUY_QUANTITIES.iter() {
                                 builder
                                     .spawn(NodeBundle {
                                         style: Style {
@@ -334,9 +336,7 @@ fn spawn_menu(
                             },
                         ))
                         .with_children(|builder| {
-                            // Compare using the PopcornCounter
-                            let unlocked_sell_options = popcorn_counter.available_sell_quantities();
-                            for quantity in unlocked_sell_options {
+                            for &quantity in POSSIBLE_SELL_QUANTITIES.iter() {
                                 builder
                                     .spawn(NodeBundle {
                                         style: Style {

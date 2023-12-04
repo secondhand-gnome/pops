@@ -15,6 +15,9 @@ use super::{
     layers::{CollisionGroupMethods, Layer},
 };
 
+pub const POSSIBLE_KERNEL_BUY_QUANTITIES: [u64; 6] = [1, 10, 100, 1000, 10000, 100000];
+pub const POSSIBLE_SELL_QUANTITIES: [u64; 5] = [100, 500, 1000, 10000, 100000];
+
 const KERNEL_SPRITE_SIZE_PX: Vec2 = Vec2::new(16., 16.);
 const KERNEL_SPRITE_SCALE_RAW: Vec3 = Vec3::new(1., 1., 1.);
 const KERNEL_SPRITE_SCALE_POPPED: Vec3 = Vec3::new(2., 2., 1.);
@@ -65,7 +68,6 @@ pub struct PopcornCounter {
 
 impl PopcornCounter {
     pub fn available_sell_quantities(&self) -> Vec<u64> {
-        const POSSIBLE_SELL_QUANTITIES: [u64; 5] = [100, 500, 1000, 10000, 100000];
         POSSIBLE_SELL_QUANTITIES
             .iter()
             .filter(|&x| self.quantity >= *x)
