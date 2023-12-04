@@ -27,8 +27,8 @@ impl Plugin for InputPlugin {
 fn update_mouse(
     mut mouse: ResMut<Mouse>,
     mouse_buttons: Res<Input<MouseButton>>,
+    touches: Res<Touches>,
     mut ev_click: EventWriter<ClickEvent>,
-    // TODO support touch input
     q_window: Query<&Window>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
 ) {
@@ -54,6 +54,18 @@ fn update_mouse(
             }
             None => {
                 warn!("Somehow clicked with no mouse position!");
+            }
+        }
+    }
+
+    for finger in touches.iter() {
+        if touches.just_pressed(finger.id()) {
+            debug!("Touch! at {:?}", finger.position());
+            if let Some(pos) = camera
+                .viewport_to_world(camera_transform, finger.position())
+                .map(|ray| ray.origin.truncate())
+            {
+                ev_click.send(ClickEvent { pos });
             }
         }
     }
