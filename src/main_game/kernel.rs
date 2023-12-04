@@ -75,12 +75,8 @@ pub struct PopcornCounter {
 }
 
 impl PopcornCounter {
-    pub fn available_sell_quantities(&self) -> Vec<u64> {
-        POSSIBLE_SELL_QUANTITIES
-            .iter()
-            .filter(|&x| self.quantity >= *x as i64)
-            .map(|x| *x)
-            .collect::<Vec<_>>()
+    pub fn quantity(&self) -> i64 {
+        self.quantity
     }
 }
 

@@ -37,6 +37,7 @@ impl Plugin for UiPlugin {
                     button_release_listener,
                     update_account_balance,
                     update_pop_count,
+                    update_button_visibility,
                 ),
             )
             .add_event::<ButtonReleaseEvent>();
@@ -84,7 +85,6 @@ fn spawn_menu(
     mut commands: Commands,
     bank_account: Res<BankAccount>,
     price_checker: Res<PriceChecker>,
-    popcorn_counter: Res<PopcornCounter>,
     font_assets: Res<FontAssets>,
     texture_assets: Res<TextureAssets>,
 ) {
@@ -231,13 +231,16 @@ fn spawn_menu(
                         .with_children(|builder| {
                             for &quantity in POSSIBLE_KERNEL_BUY_QUANTITIES.iter() {
                                 builder
-                                    .spawn(NodeBundle {
-                                        style: Style {
-                                            flex_direction: FlexDirection::Column,
+                                    .spawn((
+                                        NodeBundle {
+                                            style: Style {
+                                                flex_direction: FlexDirection::Column,
+                                                ..default()
+                                            },
                                             ..default()
                                         },
-                                        ..default()
-                                    })
+                                        ButtonType::BuyKernel(quantity),
+                                    ))
                                     .with_children(|builder| {
                                         builder
                                             .spawn((
@@ -338,13 +341,16 @@ fn spawn_menu(
                         .with_children(|builder| {
                             for &quantity in POSSIBLE_SELL_QUANTITIES.iter() {
                                 builder
-                                    .spawn(NodeBundle {
-                                        style: Style {
-                                            flex_direction: FlexDirection::Column,
+                                    .spawn((
+                                        NodeBundle {
+                                            style: Style {
+                                                flex_direction: FlexDirection::Column,
+                                                ..default()
+                                            },
                                             ..default()
                                         },
-                                        ..default()
-                                    })
+                                        ButtonType::SellPopcorn(quantity),
+                                    ))
                                     .with_children(|builder| {
                                         builder
                                             .spawn((
@@ -455,8 +461,6 @@ fn button_appearance_update(
     }
 }
 
-// TODO enable/disable purchase buttons based on account balance and cost
-
 fn button_release_listener(
     mut ev_button_released: EventReader<ButtonReleaseEvent>,
     mut ev_buy_kernel: EventWriter<KernelPurchaseEvent>,
@@ -495,4 +499,36 @@ fn update_pop_count(
 ) {
     let mut text = q_pop_count_label.single_mut();
     text.sections[1].value = pop_counter.to_string();
+}
+
+fn update_button_visibility(
+    bank_account: Res<BankAccount>,
+    price_checker: Res<PriceChecker>,
+    popcorn_counter: Res<PopcornCounter>,
+    mut q_buttons: Query<(&ButtonType, &mut Visibility), With<Node>>,
+) {
+    for (button_type, mut visibility) in q_buttons.iter_mut() {
+        match button_type {
+            ButtonType::BuyKernel(quantity) => {
+                // TODO add additional requirement to buy large quantities
+                // TODO create a Milestones module and check that you've popped at least 10? kernels
+                let cost = price_checker.raw_kernels(*quantity);
+                *visibility = if bank_account.has_at_least(cost) {
+                    Visibility::Inherited
+                } else {
+                    Visibility::Hidden
+                };
+            }
+            ButtonType::SellPopcorn(quantity) => {
+                *visibility = if popcorn_counter.quantity() >= *quantity as i64 {
+                    Visibility::Inherited
+                } else {
+                    Visibility::Hidden
+                };
+            }
+            ButtonType::Unknown => {
+                warn!("Unknown button type");
+            }
+        }
+    }
 }
