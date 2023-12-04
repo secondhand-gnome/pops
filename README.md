@@ -4,7 +4,7 @@ Created for [Bevy Game Jam #4](https://itch.io/jam/bevy-jam-4).
 
 ## Feature checklist
 * [x] A kernel that pops when clicked
-* [ ] Rendering a lot of kernels at once
+* [x] Rendering a lot of kernels at once
 * [x] Button that creates more kernels
 * [ ] Button that creates a kettle
 * [ ] When kernels and oil are placed into the kettle, they auto-pop.
