@@ -15,6 +15,10 @@ log = "0.4.20"
 num-format = { version = "0.4.3", features = ["with-num-bigint"] }
 rand = "0.8.5"
 
+# Enable max optimizations for dependencies, but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
+
 # optimize size for web release - see https://bevy-cheatbook.github.io/platforms/wasm/size-opt.html
 # TODO optimize further for final release using wasm-opt
 [profile.release]
