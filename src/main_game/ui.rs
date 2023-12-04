@@ -445,16 +445,12 @@ fn button_appearance_update(
                 *background_color = hex(COLOR_BUTTON_BACKGROUND_PRESSED).into();
                 *button_state = ButtonState::Pressed;
             }
-            Interaction::Hovered => {
+            Interaction::Hovered | Interaction::None => {
                 if *button_state == ButtonState::Pressed {
                     // Released button
                     ev_button_released.send(ButtonReleaseEvent { button_type })
                 }
                 *background_color = hex(COLOR_BUTTON_BACKGROUND_HOVER).into();
-                *button_state = ButtonState::Unpressed;
-            }
-            Interaction::None => {
-                *background_color = hex(COLOR_BUTTON_BACKGROUND).into();
                 *button_state = ButtonState::Unpressed;
             }
         }
