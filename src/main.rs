@@ -32,8 +32,8 @@ fn main() {
 
     if config::is_debug() {
         app.add_plugins((
-            WorldInspectorPlugin::new(),
-            RapierDebugRenderPlugin::default(),
+            // WorldInspectorPlugin::new(),
+            // RapierDebugRenderPlugin::default(),
         ));
     }
 
