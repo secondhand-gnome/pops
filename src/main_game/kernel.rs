@@ -144,7 +144,7 @@ fn spawn_kernels(
     texture_atlases: Res<TextureAtlasAssets>,
 ) {
     for ev in ev_spawn_kernel.read() {
-        for i in 0..ev.quantity {
+        for _ in 0..ev.quantity {
             let mut rng = rand::thread_rng();
             let translation = Vec3 {
                 x: rng.gen_range(KERNEL_SPAWN_LOCATION_X_RANGE),

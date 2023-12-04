@@ -1,5 +1,4 @@
-use bevy::{a11y::accesskit::TextAlign, prelude::*};
-use bevy_rapier2d::na::balancing::balance_parlett_reinsch;
+use bevy::prelude::*;
 
 use crate::{
     asset_loader::{FontAssets, TextureAssets},
@@ -24,7 +23,6 @@ const COLOR_BUTTON_TEXT: &str = "#10141f";
 const COLOR_BUTTON_BACKGROUND: &str = "#ffffff";
 const COLOR_BUTTON_BACKGROUND_HOVER: &str = "#a8b5b2";
 const COLOR_BUTTON_BACKGROUND_PRESSED: &str = "#819796";
-const COLOR_BUTTON_BACKGROUND_DISABLED: &str = "#577277";
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
