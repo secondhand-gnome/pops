@@ -6,8 +6,6 @@ use bigdecimal::{
 use num_format::{Locale, ToFormattedString};
 use std::{fmt, ops::Mul};
 
-use super::kernel::KernelPurchaseEvent;
-
 const INITIAL_ACCOUNT_BALANCE: f32 = 1.00;
 
 pub struct BankAccountPlugin;
@@ -15,8 +13,7 @@ pub struct BankAccountPlugin;
 impl Plugin for BankAccountPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(BankAccount::default())
-            .add_systems(Startup, initial_bank_credit)
-            .add_systems(Update, kernel_purchase_listener);
+            .add_systems(Startup, initial_bank_credit);
     }
 }
 
@@ -63,15 +60,4 @@ impl fmt::Display for BankAccount {
 
 fn initial_bank_credit(mut bank_account: ResMut<BankAccount>) {
     bank_account.credit(INITIAL_ACCOUNT_BALANCE);
-}
-
-fn kernel_purchase_listener(
-    mut ev_buy_kernel: EventReader<KernelPurchaseEvent>,
-    mut bank_account: ResMut<BankAccount>,
-) {
-    for ev in ev_buy_kernel.read() {
-        // TODO derive kernel price from an Economy class
-        let kernel_price = 0.01;
-        bank_account.debit(ev.quantity as f32 * kernel_price);
-    }
 }

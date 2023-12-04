@@ -8,8 +8,9 @@ use crate::{
 };
 
 use super::{
-    kernel::{KernelPurchaseEvent, PopCounter},
     bank_account::BankAccount,
+    economy::PriceChecker,
+    kernel::{KernelPurchaseEvent, PopCounter},
 };
 
 pub struct UiPlugin;
@@ -76,6 +77,7 @@ struct PopCountLabel;
 fn spawn_menu(
     mut commands: Commands,
     bank_account: Res<BankAccount>,
+    price_checker: Res<PriceChecker>,
     font_assets: Res<FontAssets>,
     texture_assets: Res<TextureAssets>,
 ) {
@@ -196,8 +198,8 @@ fn spawn_menu(
                     },
                 ))
                 .with_children(|builder| {
-                    let unlocked_kernel_purchase_options = vec![(1, 0.01), (10, 0.08)];
-                    for (quantity, price) in unlocked_kernel_purchase_options {
+                    let unlocked_kernel_purchase_options = vec![1, 10];
+                    for quantity in unlocked_kernel_purchase_options {
                         builder
                             .spawn(NodeBundle {
                                 style: Style {
@@ -241,6 +243,8 @@ fn spawn_menu(
                                             ),
                                         ));
                                     });
+
+                                let price = price_checker.raw_kernels(quantity);
                                 builder.spawn((
                                     Name::new(format!("Buy Kernel price label - {quantity}")),
                                     TextBundle::from_section(

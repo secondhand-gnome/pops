@@ -9,7 +9,11 @@ use std::fmt;
 
 use crate::{asset_loader::TextureAtlasAssets, input::ClickEvent};
 
-use super::layers::{CollisionGroupMethods, Layer};
+use super::{
+    bank_account::BankAccount,
+    economy::PriceChecker,
+    layers::{CollisionGroupMethods, Layer},
+};
 
 const KERNEL_SPRITE_SIZE_PX: Vec2 = Vec2::new(16., 16.);
 const KERNEL_SPRITE_SCALE_RAW: Vec3 = Vec3::new(1., 1., 1.);
@@ -55,18 +59,22 @@ impl PopCounter {
 
 impl fmt::Display for PopCounter {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            self.count
-        )
+        write!(f, "{}", self.count)
     }
 }
 
 impl Plugin for KernelPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_first_kernel)
-            .add_systems(Update, (click_listener, pop_kernels, spawn_kernels))
+            .add_systems(
+                Update,
+                (
+                    click_listener,
+                    pop_kernels,
+                    spawn_kernels,
+                    kernel_purchase_listener,
+                ),
+            )
             .add_event::<KernelPurchaseEvent>()
             .add_event::<KernelSpawnEvent>()
             .add_event::<PopEvent>()
@@ -204,5 +212,15 @@ fn kernel_pop_impulse() -> ExternalImpulse {
     ExternalImpulse {
         impulse: MAGNITUDE * Vec2::from_angle(rng.gen_range(DIRECTION_RANGE)),
         torque_impulse: 0., // TODO add torque based on angle
+    }
+}
+
+fn kernel_purchase_listener(
+    mut ev_buy_kernel: EventReader<KernelPurchaseEvent>,
+    price_checker: Res<PriceChecker>,
+    mut bank_account: ResMut<BankAccount>,
+) {
+    for ev in ev_buy_kernel.read() {
+        bank_account.debit(price_checker.raw_kernels(ev.quantity));
     }
 }

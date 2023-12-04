@@ -8,13 +8,20 @@ mod ui;
 use bevy::prelude::*;
 
 use self::{
-    bank_account::BankAccountPlugin, kernel::KernelPlugin, skillet::SkilletPlugin, ui::UiPlugin,
+    bank_account::BankAccountPlugin, economy::EconomyPlugin, kernel::KernelPlugin,
+    skillet::SkilletPlugin, ui::UiPlugin,
 };
 
 pub struct MainGamePlugin;
 
 impl Plugin for MainGamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((BankAccountPlugin, KernelPlugin, SkilletPlugin, UiPlugin));
+        app.add_plugins((
+            BankAccountPlugin,
+            EconomyPlugin,
+            KernelPlugin,
+            SkilletPlugin,
+            UiPlugin,
+        ));
     }
 }
