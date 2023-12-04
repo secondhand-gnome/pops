@@ -27,13 +27,12 @@ fn main() {
         camera::CameraPlugin,
         input::InputPlugin,
         main_game::MainGamePlugin,
-        // TODO add ui
     ));
 
     if config::is_debug() {
         app.add_plugins((
-            // WorldInspectorPlugin::new(),
-            // RapierDebugRenderPlugin::default(),
+            WorldInspectorPlugin::new(),
+            RapierDebugRenderPlugin::default(),
         ));
     }
 

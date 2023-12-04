@@ -23,4 +23,5 @@ opt-level = 3
 # TODO optimize further for final release using wasm-opt
 [profile.release]
 opt-level = 'z'
-lto = "thin"
+# lto = "thin"
+# codegen-units = 1

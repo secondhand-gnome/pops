@@ -15,7 +15,7 @@ use super::{
     layers::{CollisionGroupMethods, Layer},
 };
 
-pub const POSSIBLE_KERNEL_BUY_QUANTITIES: [u64; 6] = [1, 10, 100, 1000, 10000, 100000];
+pub const POSSIBLE_KERNEL_BUY_QUANTITIES: [u64; 3] = [1, 10, 100];
 pub const POSSIBLE_SELL_QUANTITIES: [u64; 5] = [100, 500, 1000, 10000, 100000];
 
 const KERNEL_SPRITE_SIZE_PX: Vec2 = Vec2::new(16., 16.);
@@ -45,6 +45,11 @@ pub struct KernelSpawnEvent {
 }
 
 #[derive(Event)]
+pub struct PopcornSellEvent {
+    pub quantity: u64,
+}
+
+#[derive(Event)]
 struct PopEvent {
     kernel: Entity,
 }
@@ -53,6 +58,9 @@ struct PopEvent {
 pub struct PopCounter {
     count: BigInt,
 }
+
+#[derive(Component)]
+struct Popcorn;
 
 impl PopCounter {
     fn count_pop(&mut self) {
@@ -92,11 +100,13 @@ impl Plugin for KernelPlugin {
                     pop_kernels,
                     spawn_kernels,
                     kernel_purchase_listener,
+                    popcorn_sell_listener,
                 ),
             )
             .add_event::<KernelPurchaseEvent>()
             .add_event::<KernelSpawnEvent>()
             .add_event::<PopEvent>()
+            .add_event::<PopcornSellEvent>()
             .insert_resource(PopCounter::default())
             .insert_resource(PopcornCounter::default())
             .register_type::<Kernel>()
@@ -155,7 +165,6 @@ fn spawn_kernels(
                 ColliderMassProperties::Mass(KERNEL_MASS),
                 RigidBody::Dynamic,
                 CollisionGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
-                SolverGroups::new(vec![Layer::RawKernel].group(), vec![Layer::Skillet].group()),
                 Name::new("Kernel"),
             ));
         }
@@ -214,7 +223,9 @@ fn pop_kernels(
                 collision_groups.filters |= vec![Layer::PoppedKernel].group();
 
                 // Apply an impulse to the kernel
-                commands.entity(entity).insert(kernel_pop_impulse());
+                commands
+                    .entity(entity)
+                    .insert((kernel_pop_impulse(), Popcorn));
 
                 // Change the scale
                 transform.scale = KERNEL_SPRITE_SCALE_POPPED;
@@ -244,5 +255,19 @@ fn kernel_purchase_listener(
 ) {
     for ev in ev_buy_kernel.read() {
         bank_account.debit(price_checker.raw_kernels(ev.quantity));
+    }
+}
+
+fn popcorn_sell_listener(
+    mut commands: Commands,
+    mut ev_sell_popcorn: EventReader<PopcornSellEvent>,
+    q_popcorn: Query<Entity, With<Popcorn>>,
+) {
+    for ev in ev_sell_popcorn.read() {
+        for (index, entity) in q_popcorn.iter().enumerate() {
+            if (index as u64) < ev.quantity {
+                commands.entity(entity).despawn();
+            }
+        }
     }
 }

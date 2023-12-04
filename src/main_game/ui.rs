@@ -11,8 +11,8 @@ use super::{
     bank_account::BankAccount,
     economy::PriceChecker,
     kernel::{
-        KernelPurchaseEvent, PopCounter, PopcornCounter, POSSIBLE_KERNEL_BUY_QUANTITIES,
-        POSSIBLE_SELL_QUANTITIES,
+        KernelPurchaseEvent, PopCounter, PopcornCounter, PopcornSellEvent,
+        POSSIBLE_KERNEL_BUY_QUANTITIES, POSSIBLE_SELL_QUANTITIES,
     },
 };
 
@@ -461,16 +461,18 @@ fn button_release_listener(
     mut ev_button_released: EventReader<ButtonReleaseEvent>,
     mut ev_buy_kernel: EventWriter<KernelPurchaseEvent>,
     mut ev_spawn_kernel: EventWriter<KernelSpawnEvent>,
+    mut ev_sell_popcorn: EventWriter<PopcornSellEvent>,
 ) {
     for ev in ev_button_released.read() {
         match ev.button_type {
             ButtonType::BuyKernel(quantity) => {
                 ev_buy_kernel.send(KernelPurchaseEvent { quantity });
                 ev_spawn_kernel.send(KernelSpawnEvent { quantity });
-                info!("Buy Kernel pressed");
+                info!("Buy Kernel ({quantity}) pressed");
             }
             ButtonType::SellPopcorn(quantity) => {
-                // TODO sell popcorn
+                ev_sell_popcorn.send(PopcornSellEvent { quantity });
+                info!("Sell popcorn ({quantity}) pressed")
             }
             ButtonType::Unknown => {
                 warn!("Unknown button pressed");
