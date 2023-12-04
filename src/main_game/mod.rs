@@ -2,6 +2,7 @@ mod bank_account;
 mod economy;
 mod kernel;
 mod layers;
+mod milestones;
 mod skillet;
 mod ui;
 
@@ -9,7 +10,7 @@ use bevy::prelude::*;
 
 use self::{
     bank_account::BankAccountPlugin, economy::EconomyPlugin, kernel::KernelPlugin,
-    skillet::SkilletPlugin, ui::UiPlugin,
+    milestones::MilestonesPlugin, skillet::SkilletPlugin, ui::UiPlugin,
 };
 
 pub struct MainGamePlugin;
@@ -20,6 +21,7 @@ impl Plugin for MainGamePlugin {
             BankAccountPlugin,
             EconomyPlugin,
             KernelPlugin,
+            MilestonesPlugin,
             SkilletPlugin,
             UiPlugin,
         ));

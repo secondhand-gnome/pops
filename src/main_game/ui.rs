@@ -518,6 +518,8 @@ fn update_button_visibility(
                 } else {
                     Visibility::Hidden
                 };
+                // TODO add additional requirement to buy large quantities
+                // TODO create a Milestones module and check that you've popped at least 10? kernels
             }
             ButtonType::SellPopcorn(quantity) => {
                 *visibility = if popcorn_counter.quantity() >= *quantity as i64 {
