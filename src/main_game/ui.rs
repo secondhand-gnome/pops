@@ -20,12 +20,11 @@ pub struct UiPlugin;
 
 const BOTTOM_BAR_PADDING: Val = Val::Px(4.);
 const COLOR_BUTTON_TEXT: &str = "#10141f";
-const MENU_BUTTON_FONT_SIZE: f32 = 40.;
 
-// TODO make these greyscale since we're using image buttons
-pub const COLOR_BUTTON_BACKGROUND: &str = "#73bed3";
-pub const COLOR_BUTTON_BACKGROUND_HOVER: &str = "#4f8fba";
-pub const COLOR_BUTTON_BACKGROUND_PRESSED: &str = "#3c5e8b";
+const COLOR_BUTTON_BACKGROUND: &str = "#ffffff";
+const COLOR_BUTTON_BACKGROUND_HOVER: &str = "#a8b5b2";
+const COLOR_BUTTON_BACKGROUND_PRESSED: &str = "#819796";
+const COLOR_BUTTON_BACKGROUND_DISABLED: &str = "#577277";
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
@@ -45,19 +44,19 @@ impl Plugin for UiPlugin {
 }
 
 #[derive(Component, Default, PartialEq, Reflect)]
-pub enum ButtonState {
+enum ButtonState {
     #[default]
     Unpressed,
     Pressed,
 }
 
 #[derive(Event)]
-pub struct ButtonReleaseEvent {
+struct ButtonReleaseEvent {
     pub button_type: ButtonType,
 }
 
 #[derive(Component, Clone, Copy, Debug, Default, PartialEq, Reflect)]
-pub enum ButtonType {
+enum ButtonType {
     #[default]
     Unknown,
 
@@ -445,12 +444,20 @@ fn button_appearance_update(
                 *background_color = hex(COLOR_BUTTON_BACKGROUND_PRESSED).into();
                 *button_state = ButtonState::Pressed;
             }
-            Interaction::Hovered | Interaction::None => {
+            Interaction::Hovered => {
                 if *button_state == ButtonState::Pressed {
                     // Released button
                     ev_button_released.send(ButtonReleaseEvent { button_type })
                 }
                 *background_color = hex(COLOR_BUTTON_BACKGROUND_HOVER).into();
+                *button_state = ButtonState::Unpressed;
+            }
+            Interaction::None => {
+                if *button_state == ButtonState::Pressed {
+                    // Released button
+                    ev_button_released.send(ButtonReleaseEvent { button_type })
+                }
+                *background_color = hex(COLOR_BUTTON_BACKGROUND).into();
                 *button_state = ButtonState::Unpressed;
             }
         }
@@ -507,21 +514,21 @@ fn update_button_visibility(
     for (button_type, mut visibility) in q_buttons.iter_mut() {
         match button_type {
             ButtonType::BuyKernel(quantity) => {
-                *visibility = if ENABLE_CHEATS
+                if ENABLE_CHEATS
                     || pop_counter.has_popped_at_least(*quantity)
                         && bank_account.has_at_least(price_checker.raw_kernels(*quantity))
                 {
-                    Visibility::Inherited
+                    *visibility = Visibility::Inherited;
                 } else {
-                    Visibility::Hidden
-                };
+                    *visibility = Visibility::Hidden;
+                }
             }
             ButtonType::SellPopcorn(quantity) => {
-                *visibility = if ENABLE_CHEATS || popcorn_counter.quantity() >= *quantity as i64 {
-                    Visibility::Inherited
+                if ENABLE_CHEATS || popcorn_counter.quantity() >= *quantity as i64 {
+                    *visibility = Visibility::Inherited;
                 } else {
-                    Visibility::Hidden
-                };
+                    *visibility = Visibility::Hidden;
+                }
             }
             ButtonType::Unknown => {
                 warn!("Unknown button type");
