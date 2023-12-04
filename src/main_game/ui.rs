@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{a11y::accesskit::TextAlign, prelude::*};
 use bevy_rapier2d::na::balancing::balance_parlett_reinsch;
 
 use crate::{
@@ -57,8 +57,11 @@ pub enum ButtonType {
     #[default]
     Unknown,
 
-    /// Button to buy a quantity of kernels
+    /// Button to buy a quantity of raw kernels
     BuyKernel(u64),
+
+    /// Button to sell a quantity of popped kernels
+    SellPopcorn(u64),
 }
 
 #[derive(Bundle, Default)]
@@ -98,6 +101,35 @@ fn spawn_menu(
             },
         ))
         .with_children(|builder| {
+            builder
+                .spawn((
+                    Name::new("Account panel"),
+                    NodeBundle {
+                        style: Style {
+                            flex_direction: FlexDirection::Row,
+                            align_items: AlignItems::Start,
+                            ..default()
+                        },
+                        ..default()
+                    },
+                ))
+                .with_children(|builder| {
+                    builder.spawn((
+                        Name::new("Account balance label"),
+                        AccountBalanceLabel,
+                        Label,
+                        TextBundle::from_section(
+                            bank_account.to_string(),
+                            TextStyle {
+                                font: font_assets.default.clone(),
+                                // TODO fix style
+                                font_size: 80.,
+                                color: hex("#ffffff"),
+                            },
+                        ),
+                    ));
+                });
+
             builder
                 .spawn((
                     Name::new("Pop counter panel"),
@@ -158,10 +190,10 @@ fn spawn_menu(
         .with_children(|builder| {
             builder
                 .spawn((
-                    Name::new("Account panel"),
+                    Name::new("Buy panel"),
                     NodeBundle {
                         style: Style {
-                            flex_direction: FlexDirection::Row,
+                            flex_direction: FlexDirection::Column,
                             align_items: AlignItems::Start,
                             ..default()
                         },
@@ -170,71 +202,88 @@ fn spawn_menu(
                 ))
                 .with_children(|builder| {
                     builder.spawn((
-                        Name::new("Account balance label"),
-                        AccountBalanceLabel,
-                        Label,
+                        Name::new("Buy label"),
                         TextBundle::from_section(
-                            bank_account.to_string(),
+                            "Buy",
                             TextStyle {
                                 font: font_assets.default.clone(),
-                                // TODO fix style
-                                font_size: 80.,
-                                color: hex("#ffffff"),
+                                font_size: 28.,
+                                color: hex(COLOR_BUTTON_TEXT),
                             },
                         ),
                     ));
-                });
-
-            builder
-                .spawn((
-                    Name::new("Buy menu"),
-                    NodeBundle {
-                        style: Style {
-                            flex_direction: FlexDirection::Row,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },
-                        ..default()
-                    },
-                ))
-                .with_children(|builder| {
-                    let unlocked_kernel_purchase_options = vec![1, 10];
-                    for quantity in unlocked_kernel_purchase_options {
-                        builder
-                            .spawn(NodeBundle {
+                    builder
+                        .spawn((
+                            Name::new("Buy buttons"),
+                            NodeBundle {
                                 style: Style {
-                                    flex_direction: FlexDirection::Column,
+                                    flex_direction: FlexDirection::Row,
+                                    align_items: AlignItems::Center,
                                     ..default()
                                 },
                                 ..default()
-                            })
-                            .with_children(|builder| {
+                            },
+                        ))
+                        .with_children(|builder| {
+                            let unlocked_kernel_purchase_options = vec![1, 10];
+                            for quantity in unlocked_kernel_purchase_options {
                                 builder
-                                    .spawn((
-                                        Name::new(format!("Buy Kernel Button - {quantity}")),
-                                        UiButtonBundle {
-                                            button: ButtonBundle {
-                                                style: buy_button_style(),
-                                                border_color: BorderColor(Color::BLACK),
-                                                background_color: hex(COLOR_BUTTON_BACKGROUND)
-                                                    .into(),
-                                                image: UiImage {
-                                                    texture: texture_assets.raw_kernel.clone(),
-                                                    ..default()
-                                                },
-                                                ..default()
-                                            },
-                                            b_type: ButtonType::BuyKernel(quantity),
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            flex_direction: FlexDirection::Column,
                                             ..default()
                                         },
-                                    ))
+                                        ..default()
+                                    })
                                     .with_children(|builder| {
+                                        builder
+                                            .spawn((
+                                                Name::new(format!(
+                                                    "Buy Kernel Button - {quantity}"
+                                                )),
+                                                UiButtonBundle {
+                                                    button: ButtonBundle {
+                                                        style: buy_button_style(),
+                                                        border_color: BorderColor(Color::BLACK),
+                                                        background_color: hex(
+                                                            COLOR_BUTTON_BACKGROUND,
+                                                        )
+                                                        .into(),
+                                                        image: UiImage {
+                                                            texture: texture_assets
+                                                                .raw_kernel
+                                                                .clone(),
+                                                            ..default()
+                                                        },
+                                                        ..default()
+                                                    },
+                                                    b_type: ButtonType::BuyKernel(quantity),
+                                                    ..default()
+                                                },
+                                            ))
+                                            .with_children(|builder| {
+                                                builder.spawn((
+                                                    Name::new(format!(
+                                                        "Buy Kernel quantity label - {quantity}"
+                                                    )),
+                                                    TextBundle::from_section(
+                                                        format!("{}", quantity),
+                                                        TextStyle {
+                                                            font: font_assets.default.clone(),
+                                                            font_size: 20.,
+                                                            color: hex(COLOR_BUTTON_TEXT),
+                                                        },
+                                                    ),
+                                                ));
+                                            });
+
+                                        let price = price_checker.raw_kernels(quantity);
                                         builder.spawn((
                                             Name::new(format!(
-                                                "Buy Kernel quantity label - {quantity}"
+                                                "Buy Kernel price label - {quantity}"
                                             )),
                                             TextBundle::from_section(
-                                                format!("{}", quantity),
+                                                format!("${:.2}", price),
                                                 TextStyle {
                                                     font: font_assets.default.clone(),
                                                     font_size: 20.,
@@ -243,21 +292,116 @@ fn spawn_menu(
                                             ),
                                         ));
                                     });
+                            }
+                        });
+                });
 
-                                let price = price_checker.raw_kernels(quantity);
-                                builder.spawn((
-                                    Name::new(format!("Buy Kernel price label - {quantity}")),
-                                    TextBundle::from_section(
-                                        format!("${:.2}", price),
-                                        TextStyle {
-                                            font: font_assets.default.clone(),
-                                            font_size: 20.,
-                                            color: hex(COLOR_BUTTON_TEXT),
+            builder
+                .spawn((
+                    Name::new("Sell panel"),
+                    NodeBundle {
+                        style: Style {
+                            flex_direction: FlexDirection::Column,
+                            align_items: AlignItems::Start,
+                            ..default()
+                        },
+                        ..default()
+                    },
+                ))
+                .with_children(|builder| {
+                    builder.spawn((
+                        Name::new("Sell label"),
+                        TextBundle::from_section(
+                            "Sell",
+                            TextStyle {
+                                font: font_assets.default.clone(),
+                                font_size: 28.,
+                                color: hex(COLOR_BUTTON_TEXT),
+                            },
+                        ),
+                    ));
+                    builder
+                        .spawn((
+                            Name::new("Sell buttons"),
+                            NodeBundle {
+                                style: Style {
+                                    flex_direction: FlexDirection::Row,
+                                    align_items: AlignItems::Center,
+                                    ..default()
+                                },
+                                ..default()
+                            },
+                        ))
+                        .with_children(|builder| {
+                            let unlocked_sell_options = vec![1, 10];
+                            for quantity in unlocked_sell_options {
+                                builder
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            flex_direction: FlexDirection::Column,
+                                            ..default()
                                         },
-                                    ),
-                                ));
-                            });
-                    }
+                                        ..default()
+                                    })
+                                    .with_children(|builder| {
+                                        builder
+                                            .spawn((
+                                                Name::new(format!(
+                                                    "Sell Popcorn Button - {quantity}"
+                                                )),
+                                                UiButtonBundle {
+                                                    button: ButtonBundle {
+                                                        style: buy_button_style(),
+                                                        border_color: BorderColor(Color::BLACK),
+                                                        background_color: hex(
+                                                            COLOR_BUTTON_BACKGROUND,
+                                                        )
+                                                        .into(),
+                                                        image: UiImage {
+                                                            texture: texture_assets
+                                                                .raw_kernel
+                                                                .clone(),
+                                                            ..default()
+                                                        },
+                                                        ..default()
+                                                    },
+                                                    b_type: ButtonType::SellPopcorn(quantity),
+                                                    ..default()
+                                                },
+                                            ))
+                                            .with_children(|builder| {
+                                                builder.spawn((
+                                                    Name::new(format!(
+                                                        "Sell popcorn quantity label - {quantity}"
+                                                    )),
+                                                    TextBundle::from_section(
+                                                        format!("{}", quantity),
+                                                        TextStyle {
+                                                            font: font_assets.default.clone(),
+                                                            font_size: 20.,
+                                                            color: hex(COLOR_BUTTON_TEXT),
+                                                        },
+                                                    ),
+                                                ));
+                                            });
+
+                                        let price = price_checker.raw_kernels(quantity);
+                                        builder.spawn((
+                                            Name::new(format!(
+                                                "Buy Kernel price label - {quantity}"
+                                            )),
+                                            TextBundle::from_section(
+                                                format!("${:.2}", price),
+                                                TextStyle {
+                                                    font: font_assets.default.clone(),
+                                                    font_size: 20.,
+                                                    color: hex(COLOR_BUTTON_TEXT),
+                                                },
+                                            ),
+                                        ));
+                                    });
+                            }
+                        });
                 });
         });
 }
@@ -323,6 +467,9 @@ fn button_release_listener(
                 ev_buy_kernel.send(KernelPurchaseEvent { quantity });
                 ev_spawn_kernel.send(KernelSpawnEvent { quantity });
                 info!("Buy Kernel pressed");
+            }
+            ButtonType::SellPopcorn(quantity) => {
+                // TODO sell popcorn
             }
             ButtonType::Unknown => {
                 warn!("Unknown button pressed");
