@@ -63,6 +63,9 @@ enum ButtonType {
 
     /// Button to sell a quantity of popped kernels
     SellPopcorn(u64),
+
+    /// Buy an auto-kettle
+    BuyAutoKettle,
 }
 
 #[derive(Bundle, Default)]
@@ -479,6 +482,9 @@ fn button_release_listener(
                 ev_sell_popcorn.send(PopcornSellEvent { quantity });
                 info!("Sell popcorn ({quantity}) pressed")
             }
+            ButtonType::BuyAutoKettle => {
+                // TODO support auto-kettles
+            }
             ButtonType::Unknown => {
                 warn!("Unknown button pressed");
             }
@@ -510,27 +516,43 @@ fn update_button_visibility(
     mut q_buttons: Query<(&ButtonType, &mut Visibility), With<Node>>,
 ) {
     for (button_type, mut visibility) in q_buttons.iter_mut() {
-        match button_type {
-            ButtonType::BuyKernel(quantity) => {
-                if ENABLE_CHEATS
-                    || pop_counter.has_popped_at_least(*quantity)
-                        && bank_account.has_at_least(price_checker.raw_kernels(*quantity))
-                {
-                    *visibility = Visibility::Inherited;
-                } else {
-                    *visibility = Visibility::Hidden;
-                }
-            }
-            ButtonType::SellPopcorn(quantity) => {
-                if ENABLE_CHEATS || popcorn_counter.quantity() >= *quantity as i64 {
-                    *visibility = Visibility::Inherited;
-                } else {
-                    *visibility = Visibility::Hidden;
-                }
-            }
-            ButtonType::Unknown => {
-                warn!("Unknown button type");
-            }
+        if can_press_button(
+            &button_type,
+            &bank_account,
+            &price_checker,
+            &pop_counter,
+            &popcorn_counter,
+        ) {
+            *visibility = Visibility::Inherited;
+        } else {
+            *visibility = Visibility::Hidden;
+        }
+    }
+}
+
+fn can_press_button(
+    button_type: &ButtonType,
+    bank_account: &Res<BankAccount>,
+    price_checker: &Res<PriceChecker>,
+    pop_counter: &Res<PopCounter>,
+    popcorn_counter: &Res<PopcornCounter>,
+) -> bool {
+    match button_type {
+        ButtonType::BuyKernel(quantity) => {
+            ENABLE_CHEATS
+                || pop_counter.has_popped_at_least(*quantity)
+                    && bank_account.has_at_least(price_checker.raw_kernels(*quantity))
+        }
+        ButtonType::SellPopcorn(quantity) => {
+            ENABLE_CHEATS || popcorn_counter.quantity() >= *quantity as i64
+        }
+
+        ButtonType::BuyAutoKettle => {
+            // TODO check if we can buy an auto-kettle
+            true
+        }
+        ButtonType::Unknown => {
+            panic!("Unknown button type");
         }
     }
 }
