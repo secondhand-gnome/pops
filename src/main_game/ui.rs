@@ -197,33 +197,59 @@ fn spawn_menu(
                 ))
                 .with_children(|builder| {
                     builder
-                        .spawn((
-                            Name::new("Buy Kernel Button"),
-                            UiButtonBundle {
-                                button: ButtonBundle {
-                                    style: buy_button_style(),
-                                    border_color: BorderColor(Color::BLACK),
-                                    background_color: hex(COLOR_BUTTON_BACKGROUND).into(),
-                                    image: UiImage {
-                                        texture: texture_assets.raw_kernel.clone(),
-                                        ..default()
-                                    },
-                                    ..default()
-                                },
-                                b_type: ButtonType::BuyKernel(1),
+                        .spawn(NodeBundle {
+                            style: Style {
+                                flex_direction: FlexDirection::Column,
                                 ..default()
                             },
-                        ))
+                            ..default()
+                        })
                         .with_children(|builder| {
-                            // builder.spawn(TextBundle::from_section(
-                            //     // TODO remove for the x1 button. Add a x10, x100 etc. ?
-                            //     "Buy Kernel",
-                            //     TextStyle {
-                            //         font: font_assets.default.clone(),
-                            //         font_size: MENU_BUTTON_FONT_SIZE,
-                            //         color: hex(COLOR_BUTTON_TEXT),
-                            //     },
-                            // ));
+                            builder
+                                .spawn((
+                                    Name::new("Buy Kernel Button - 1"),
+                                    UiButtonBundle {
+                                        button: ButtonBundle {
+                                            style: buy_button_style(),
+                                            border_color: BorderColor(Color::BLACK),
+                                            background_color: hex(COLOR_BUTTON_BACKGROUND).into(),
+                                            image: UiImage {
+                                                texture: texture_assets.raw_kernel.clone(),
+                                                ..default()
+                                            },
+                                            ..default()
+                                        },
+                                        b_type: ButtonType::BuyKernel(1),
+                                        ..default()
+                                    },
+                                ))
+                                .with_children(|builder| {
+                                    builder.spawn((
+                                        Name::new("Buy Kernel quantity label - 1"),
+                                        TextBundle::from_section(
+                                            // TODO remove for the x1 button. Add a x10, x100 etc. ?
+                                            "1",
+                                            TextStyle {
+                                                // TODO save style for kernel quantity
+                                                font: font_assets.default.clone(),
+                                                font_size: MENU_BUTTON_FONT_SIZE,
+                                                color: hex(COLOR_BUTTON_TEXT),
+                                            },
+                                        ),
+                                    ));
+                                });
+                            builder.spawn((
+                                Name::new("Buy kernel price label - 1"),
+                                TextBundle::from_section(
+                                    "$.01",
+                                    TextStyle {
+                                        // TODO save style for kernel price
+                                        font: font_assets.default.clone(),
+                                        font_size: MENU_BUTTON_FONT_SIZE,
+                                        color: hex(COLOR_BUTTON_TEXT),
+                                    },
+                                ),
+                            ));
                         });
                 });
         });
