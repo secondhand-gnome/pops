@@ -7,6 +7,7 @@ pub struct TextureAssets {
     // Textures go here
     pub raw_kernel: Handle<Image>,
     pub skillet: Handle<Image>,
+    pub popcorn_box: Handle<Image>,
 }
 
 #[derive(Resource, Debug)]
@@ -39,6 +40,7 @@ fn load_assets(
         // Textures go here
         raw_kernel: png("raw-kernel"),
         skillet: png("skillet"),
+        popcorn_box: png("popcorn-box"),
     });
 
     commands.insert_resource(TextureAtlasAssets {

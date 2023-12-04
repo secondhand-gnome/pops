@@ -333,7 +333,8 @@ fn spawn_menu(
                             },
                         ))
                         .with_children(|builder| {
-                            let unlocked_sell_options = vec![1, 10];
+                            // TODO only display options if we have enough to sell
+                            let unlocked_sell_options = vec![100];
                             for quantity in unlocked_sell_options {
                                 builder
                                     .spawn(NodeBundle {
@@ -359,7 +360,7 @@ fn spawn_menu(
                                                         .into(),
                                                         image: UiImage {
                                                             texture: texture_assets
-                                                                .raw_kernel
+                                                                .popcorn_box
                                                                 .clone(),
                                                             ..default()
                                                         },
