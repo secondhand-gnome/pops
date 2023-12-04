@@ -48,6 +48,7 @@ impl BankAccount {
     fn cents(&self) -> u8 {
         (self.balance.clone() % BigDecimal::from(1))
             .mul(BigDecimal::from(100))
+            .abs()
             .to_u8()
             .unwrap()
     }
@@ -55,12 +56,9 @@ impl BankAccount {
 
 impl fmt::Display for BankAccount {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "${}.{:0>2}",
-            self.whole_dollars().to_formatted_string(&Locale::en),
-            self.cents()
-        )
+        let neg_sign = if self.has_at_least(0.) { "" } else { "-" };
+        let dollars = self.whole_dollars().to_formatted_string(&Locale::en);
+        write!(f, "{neg_sign}${dollars}.{:0>2}", self.cents())
     }
 }
 
