@@ -226,8 +226,9 @@ fn pop_kernels(
                     .entity(entity)
                     .insert((kernel_pop_impulse(), Popcorn));
 
-                // Change the scale
+                // Change the scale and layer
                 transform.scale = KERNEL_SPRITE_SCALE_POPPED;
+                transform.translation.z = Layer::PoppedKernel.z();
 
                 debug!("Pop!");
             }
