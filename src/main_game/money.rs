@@ -51,10 +51,6 @@ impl BankAccount {
             .to_u8()
             .unwrap()
     }
-
-    fn to_string(&self) -> String {
-        format!("{}", self)
-    }
 }
 
 impl fmt::Display for BankAccount {

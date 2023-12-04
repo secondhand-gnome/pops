@@ -2,7 +2,10 @@ use std::{f32::consts::PI, ops::Range};
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use bigdecimal::num_bigint::BigInt;
+use num_format::{Locale, ToFormattedString};
 use rand::Rng;
+use std::fmt;
 
 use crate::{asset_loader::TextureAtlasAssets, input::ClickEvent};
 
@@ -39,6 +42,23 @@ struct PopEvent {
     kernel: Entity,
 }
 
+#[derive(Resource, Default)]
+pub struct PopCounter {
+    count: BigInt,
+}
+
+impl PopCounter {
+    fn count_pop(&mut self) {
+        self.count += BigInt::from(1);
+    }
+}
+
+impl fmt::Display for PopCounter {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.count)
+    }
+}
+
 impl Plugin for KernelPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_first_kernel)
@@ -46,6 +66,7 @@ impl Plugin for KernelPlugin {
             .add_event::<KernelPurchaseEvent>()
             .add_event::<KernelSpawnEvent>()
             .add_event::<PopEvent>()
+            .insert_resource(PopCounter::default())
             .register_type::<Kernel>()
             .register_type::<KernelState>();
     }
@@ -130,6 +151,7 @@ fn click_listener(
 fn pop_kernels(
     mut commands: Commands,
     mut ev_pop: EventReader<PopEvent>,
+    mut pop_counter: ResMut<PopCounter>,
     mut q_kernels: Query<(
         Entity,
         &mut Kernel,
@@ -143,6 +165,8 @@ fn pop_kernels(
             q_kernels.iter_mut()
         {
             if ev.kernel == entity && kernel.state == KernelState::Raw {
+                pop_counter.count_pop();
+
                 // Change the kernel's state to Popped
                 kernel.state = KernelState::Popped;
 

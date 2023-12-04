@@ -7,7 +7,10 @@ use crate::{
     main_game::kernel::KernelSpawnEvent,
 };
 
-use super::{kernel::KernelPurchaseEvent, money::BankAccount};
+use super::{
+    kernel::{KernelPurchaseEvent, PopCounter},
+    money::BankAccount,
+};
 
 pub struct UiPlugin;
 
@@ -29,6 +32,7 @@ impl Plugin for UiPlugin {
                     button_appearance_update,
                     button_release_listener,
                     update_account_balance,
+                    update_pop_count,
                 ),
             )
             .add_event::<ButtonReleaseEvent>();
@@ -120,7 +124,7 @@ fn spawn_menu(
                                 },
                             },
                             TextSection {
-                                value: "0".to_string(), // TODO
+                                value: "0".to_string(),
                                 style: TextStyle {
                                     font: font_assets.default.clone(),
                                     // TODO fix style
@@ -298,7 +302,14 @@ fn update_account_balance(
     bank_account: Res<BankAccount>,
     mut q_balance_label: Query<&mut Text, With<AccountBalanceLabel>>,
 ) {
-    for mut text in q_balance_label.iter_mut() {
-        text.sections[0].value = bank_account.to_string();
-    }
+    let mut text = q_balance_label.single_mut();
+    text.sections[0].value = bank_account.to_string();
+}
+
+fn update_pop_count(
+    pop_counter: Res<PopCounter>,
+    mut q_pop_count_label: Query<&mut Text, With<PopCountLabel>>,
+) {
+    let mut text = q_pop_count_label.single_mut();
+    text.sections[1].value = pop_counter.to_string();
 }
