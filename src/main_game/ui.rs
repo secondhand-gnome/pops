@@ -7,12 +7,13 @@ use crate::{
 };
 
 use super::{
+    auto_kettle::AutoKettlePurchaseEvent,
     bank_account::BankAccount,
     economy::PriceChecker,
     kernel::{
         KernelPurchaseEvent, PopCounter, PopcornCounter, PopcornSellEvent,
         POSSIBLE_KERNEL_BUY_QUANTITIES, POSSIBLE_SELL_QUANTITIES,
-    }, auto_kettle::AutoKettlePurchaseEvent,
+    },
 };
 
 pub struct UiPlugin;
@@ -542,7 +543,8 @@ fn button_release_listener(
                 info!("Sell popcorn ({quantity}) pressed")
             }
             ButtonType::BuyAutoKettle => {
-                // TODO support auto-kettles
+                ev_buy_auto_kettle.send(AutoKettlePurchaseEvent);
+                info!("Buy Auto Kettle pressed");
             }
             ButtonType::Unknown => {
                 warn!("Unknown button pressed");
