@@ -15,6 +15,7 @@ pub struct TextureAssets {
 pub struct TextureAtlasAssets {
     // Texture atlases go here
     pub kernel: Handle<TextureAtlas>,
+    pub auto_kettle: Handle<TextureAtlas>,
 }
 
 #[derive(Resource, Debug)]
@@ -51,6 +52,14 @@ fn load_assets(
             png("kernel-sheet"),
             Vec2::new(16., 16.),
             2,
+            1,
+            None,
+            None,
+        )),
+        auto_kettle: texture_atlases.add(TextureAtlas::from_grid(
+            png("auto-kettle"),
+            Vec2::new(16., 16.),
+            4,
             1,
             None,
             None,

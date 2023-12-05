@@ -588,8 +588,7 @@ fn update_button_visibility(
             }
 
             ButtonType::BuyAutoKettle => {
-                // TODO check if we can buy an auto-kettle
-                ENABLE_CHEATS
+                ENABLE_CHEATS || bank_account.has_at_least(price_checker.auto_kettle())
             }
             ButtonType::Unknown => {
                 panic!("Unknown button type");
