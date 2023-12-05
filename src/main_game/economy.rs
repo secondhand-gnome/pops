@@ -21,6 +21,10 @@ impl PriceChecker {
         let q = quantity as f32;
         q * 0.04
     }
+
+    pub fn auto_kettle(&self) -> f32 {
+        100.0
+    }
 }
 
 impl Plugin for EconomyPlugin {

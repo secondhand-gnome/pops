@@ -1,3 +1,4 @@
+mod auto_kettle;
 mod bank_account;
 mod economy;
 mod kernel;
