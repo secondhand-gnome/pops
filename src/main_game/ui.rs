@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     asset_loader::{FontAssets, TextureAssets},
-    config::{hex, ENABLE_CHEATS},
+    config::{hex, ENABLE_AUTO_KETTLE, ENABLE_CHEATS},
     main_game::kernel::KernelSpawnEvent,
 };
 
@@ -300,64 +300,70 @@ fn spawn_menu(
                                         ));
                                     });
                             }
-                            builder
-                                .spawn((
-                                    NodeBundle {
-                                        style: Style {
-                                            flex_direction: FlexDirection::Column,
-                                            ..default()
-                                        },
-                                        ..default()
-                                    },
-                                    ButtonType::BuyAutoKettle,
-                                ))
-                                .with_children(|builder| {
-                                    builder
-                                        .spawn((
-                                            Name::new(format!("Buy Auto Kettle Button")),
-                                            UiButtonBundle {
-                                                button: ButtonBundle {
-                                                    style: buy_button_style(),
-                                                    border_color: BorderColor(Color::BLACK),
-                                                    background_color: hex(COLOR_BUTTON_BACKGROUND)
-                                                        .into(),
-                                                    image: UiImage {
-                                                        texture: texture_assets.auto_kettle.clone(),
-                                                        ..default()
-                                                    },
-                                                    ..default()
-                                                },
-                                                b_type: ButtonType::BuyAutoKettle,
+                            if ENABLE_AUTO_KETTLE {
+                                builder
+                                    .spawn((
+                                        NodeBundle {
+                                            style: Style {
+                                                flex_direction: FlexDirection::Column,
                                                 ..default()
                                             },
-                                        ))
-                                        .with_children(|builder| {
-                                            builder.spawn((
-                                                Name::new(format!("Buy Auto Kettle Label")),
-                                                TextBundle::from_section(
-                                                    "Auto",
-                                                    TextStyle {
-                                                        font: font_assets.default.clone(),
-                                                        font_size: 20.,
-                                                        color: hex(COLOR_BUTTON_TEXT),
+                                            ..default()
+                                        },
+                                        ButtonType::BuyAutoKettle,
+                                    ))
+                                    .with_children(|builder| {
+                                        builder
+                                            .spawn((
+                                                Name::new(format!("Buy Auto Kettle Button")),
+                                                UiButtonBundle {
+                                                    button: ButtonBundle {
+                                                        style: buy_button_style(),
+                                                        border_color: BorderColor(Color::BLACK),
+                                                        background_color: hex(
+                                                            COLOR_BUTTON_BACKGROUND,
+                                                        )
+                                                        .into(),
+                                                        image: UiImage {
+                                                            texture: texture_assets
+                                                                .auto_kettle
+                                                                .clone(),
+                                                            ..default()
+                                                        },
+                                                        ..default()
                                                     },
-                                                ),
-                                            ));
-                                        });
+                                                    b_type: ButtonType::BuyAutoKettle,
+                                                    ..default()
+                                                },
+                                            ))
+                                            .with_children(|builder| {
+                                                builder.spawn((
+                                                    Name::new(format!("Buy Auto Kettle Label")),
+                                                    TextBundle::from_section(
+                                                        "Auto",
+                                                        TextStyle {
+                                                            font: font_assets.default.clone(),
+                                                            font_size: 20.,
+                                                            color: hex(COLOR_BUTTON_TEXT),
+                                                        },
+                                                    ),
+                                                ));
+                                            });
 
-                                    let price = price_checker.auto_kettle();
-                                    builder.spawn((
-                                        Name::new("Buy Auto Kettle price label"),
-                                        TextBundle::from_section(
-                                            format!("${:.2}", price),
-                                            TextStyle {
-                                                font: font_assets.default.clone(),
-                                                font_size: 20.,
-                                                color: hex(COLOR_BUTTON_TEXT),
-                                            },
-                                        ),
-                                    ));
-                                });
+                                        let price = price_checker.auto_kettle();
+                                        builder.spawn((
+                                            Name::new("Buy Auto Kettle price label"),
+                                            TextBundle::from_section(
+                                                format!("${:.2}", price),
+                                                TextStyle {
+                                                    font: font_assets.default.clone(),
+                                                    font_size: 20.,
+                                                    color: hex(COLOR_BUTTON_TEXT),
+                                                },
+                                            ),
+                                        ));
+                                    });
+                            }
                         });
                 });
 
