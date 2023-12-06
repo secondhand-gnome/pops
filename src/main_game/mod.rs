@@ -4,13 +4,14 @@ mod economy;
 mod kernel;
 mod layers;
 mod skillet;
+mod sound;
 mod ui;
 
 use bevy::prelude::*;
 
 use self::{
     auto_kettle::AutoKettlePlugin, bank_account::BankAccountPlugin, economy::EconomyPlugin,
-    kernel::KernelPlugin, skillet::SkilletPlugin, ui::UiPlugin,
+    kernel::KernelPlugin, skillet::SkilletPlugin, ui::UiPlugin, sound::SoundPlugin,
 };
 
 pub struct MainGamePlugin;
@@ -23,6 +24,7 @@ impl Plugin for MainGamePlugin {
             EconomyPlugin,
             KernelPlugin,
             SkilletPlugin,
+            SoundPlugin,
             UiPlugin,
         ));
     }

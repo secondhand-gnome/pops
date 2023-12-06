@@ -49,7 +49,7 @@ pub struct PopcornSellEvent {
 }
 
 #[derive(Event)]
-struct PopEvent {
+pub struct PopEvent {
     kernel: Entity,
 }
 

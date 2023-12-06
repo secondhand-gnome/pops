@@ -17,6 +17,9 @@ Created for [Bevy Game Jam #4](https://itch.io/jam/bevy-jam-4).
 ## Noto Sans Font
 * [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans/about) font licensed under the [Open Font License](https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL).
 
+## MixKit sound effects
+See list at [assets/audio/README.md](assets/audio/README.md).
+
 # License
 (c) 2023 Secondhand Gnome
 

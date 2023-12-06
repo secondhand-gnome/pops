@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_kira_audio::AudioSource;
 
 pub struct AssetLoaderPlugin;
 
@@ -21,6 +22,12 @@ pub struct TextureAtlasAssets {
 #[derive(Resource, Debug)]
 pub struct FontAssets {
     pub default: Handle<Font>,
+}
+
+#[derive(Resource)]
+pub struct AudioAssets {
+    pub pop1: Handle<AudioSource>,
+    pub pop2: Handle<AudioSource>,
 }
 
 impl Plugin for AssetLoaderPlugin {
@@ -67,5 +74,9 @@ fn load_assets(
     });
     commands.insert_resource(FontAssets {
         default: asset_server.load("fonts/noto-sans/NotoSansMono-Bold.ttf"),
+    });
+    commands.insert_resource(AudioAssets {
+        pop1: asset_server.load("audio/pop1.ogg"),
+        pop2: asset_server.load("audio/pop2.ogg"),
     });
 }
