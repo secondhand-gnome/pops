@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-pub const ENABLE_CHEATS: bool = true;
+pub const ENABLE_CHEATS: bool = false;
 pub const ENABLE_AUTO_KETTLE: bool = false;
 
 pub const BACKGROUND_COLOR: &str = "#3c5e8b";
