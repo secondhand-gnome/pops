@@ -23,8 +23,7 @@ rand = "0.8.5"
 opt-level = 3
 
 # optimize size for web release - see https://bevy-cheatbook.github.io/platforms/wasm/size-opt.html
-# TODO optimize further for final release using wasm-opt
 [profile.release]
 opt-level = 'z'
-# lto = "thin"
-# codegen-units = 1
+lto = "thin"
+codegen-units = 1
