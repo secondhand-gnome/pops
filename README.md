@@ -20,6 +20,9 @@ Created for [Bevy Game Jam #4](https://itch.io/jam/bevy-jam-4).
 ## MixKit sound effects
 See list at [assets/audio/README.md](assets/audio/README.md).
 
+## Crates
+See third-party crates at [Cargo.toml](Cargo.toml).
+
 # License
 (c) 2023 Secondhand Gnome
 
