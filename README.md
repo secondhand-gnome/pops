@@ -2,6 +2,8 @@
 
 Created for [Bevy Game Jam #4](https://itch.io/jam/bevy-jam-4).
 
+Playable at https://secondhandgnome.itch.io/pops.
+
 ## Feature checklist
 * [x] A kernel that pops when clicked
 * [x] Rendering a lot of kernels at once
